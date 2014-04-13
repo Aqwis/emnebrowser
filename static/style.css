@@ -1,0 +1,44 @@
+* {
+    font-family: Verdana, Tahoma, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    font-size: 2em;
+}
+
+p, li, th, td, span.toolbar-content {
+    font-size: 0.8em;
+}
+
+div#toolbar {
+    background-color: #ddd;
+    padding: 5px;
+}
+
+tr.table-header {
+    background-color: #ddd;
+}
+
+th, td {
+    padding: 5px 0 5px 0;
+}
+
+td.td-url {
+    text-align: center;
+}
+
+div#header {
+    padding: 1em;
+}
+
+div#header h1 {
+    font-size: 1em;
+    font-family: Verdana, Tahoma, sans-serif;
+    font-weight: 300;
+}
+
+table#main-table {
+    width: 100%;
+}
