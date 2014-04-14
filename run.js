@@ -27,6 +27,7 @@ function main() {
         var raw_queries = req.query;
         var queries = {};
         var sortby = null;
+        var page_count = 0;
 
         var reql = r.db('ntnu_courses').table('courses');
 
@@ -35,12 +36,19 @@ function main() {
                fix it someday. */
             var value = raw_queries[field];
             var neq = false; // not equal to instead of equal to?
+            if (!value) {
+                return;
+            }
             if (value[0] === "!") {
                 neq = true;
                 value = value.slice(1);
             }
             if (field == "sortby") {
-                sortby = raw_queries[field];
+                sortby = value;
+                return;
+            }
+            if (field == "page") {
+                page = Number(value);
                 return;
             }
             if (field.indexOf("@") != -1) {
@@ -98,9 +106,15 @@ function main() {
             }
         });
 
-        console.log(queries);
+        Object.keys(queries).forEach(function(key) {
+            var value = queries[key];
+            reql = reql.filter(function(doc) {
+                return doc(key).match("(?i)" + value)
+            });
+            /* reql = reql.filter(r.row(key).eq(value)); */
+        });
 
-        reql = reql.filter(queries).limit(50);
+        reql = reql.limit(50);
         reql.run(connection, function(err, c) {
             if (err) console.log(err);
             c.toArray(function(err, result) {

@@ -1,30 +1,41 @@
 function ViewModel() {
     var self = this;
 
-    self.courses = ko.observableArray([]);
+    self.tableTemplate = "";
 
-    self.getCourses = function(callback) {
-        $.getJSON("http://horda.land:5000/api/", function(data) {
+    self.courses = ko.observableArray([]);
+    self.getCourses = ko.computed(function() {
+        $.getJSON("http://horda.land:5000/api/?" + self.queryString(), function(data) {
             self.courses(data);
-            callback();
         });
-    }
+    }, this, { deferEvaluation: true });
+
+    self.tableHTML = ko.computed(function() {
+        return swig.render(self.tableTemplate, { filename: '/', locals: { courses: self.courses() }});
+    }, this, { deferEvaluation: true });
+
+    // Filters
+    self.searchString = ko.observable("");
+
+    self.queryString = ko.computed(function() {
+        return $.param({
+            name: this.searchString()
+        });
+    }, this);
 }
 
 $(function() {
-    var vm = new ViewModel();
+    vm = new ViewModel();
     ko.applyBindings(vm);
 
-    var tableTemplate = "";
+    // Turn off swig's cache, which
+    // breaks everything!
+    swig.setDefaults({ cache: false });
 
     // Initially, retrieve the table template
     // and get some unfiltered data
     $.get("static/table.html", function(data) {
-        tableTemplate = data;
-        vm.getCourses(function() {
-            var output = swig.render(tableTemplate, { filename: '/', locals: { courses: vm.courses() }});
-            $('#content').html(output);
-            console.log(output);
-        });
+        vm.tableTemplate = data;
+        vm.getCourses();
     });
 });
