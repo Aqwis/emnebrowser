@@ -3,6 +3,22 @@ var r = require('rethinkdb');
 var swig = require('swig');
 var app = express();
 
+function stringToType(string, type) {
+    if (type == "boolean") {
+        if (string == "false" || string == "FALSE") {
+            return false;
+        } else {
+            return true;
+        }
+    } else if (type == "number") {
+        return Number(string);
+    } else if (type == "string") {
+        return string;
+    } else {
+        throw new Error("Incorrect type specified");
+    }
+}
+
 function main() {
     app.engine('html', swig.renderFile);
     app.set('view engine', 'html');
@@ -24,94 +40,48 @@ function main() {
 
     // Routing
     app.get('/api/', function(req, page) {
-        var raw_queries = req.query;
-        var queries = {};
+        var query = req.query;
         var sortby = null;
         var page_count = 0;
 
+        // We go through each entry in query and
+        // filter for each entry
         var reql = r.db('ntnu_courses').table('courses');
 
-        Object.keys(raw_queries).forEach(function(field) {
-            /* All this is very ugly,
-               fix it someday. */
-            var value = raw_queries[field];
-            var neq = false; // not equal to instead of equal to?
+        Object.keys(query).forEach(function(key) {
+            var type = query[key].type;
+            var matching = query[key].matching;
+            var value = stringToType(query[key].value, type);
             if (!value) {
                 return;
             }
-            if (value[0] === "!") {
-                neq = true;
-                value = value.slice(1);
-            }
-            if (field == "sortby") {
+            // Special cases
+            if (key == "sortby") {
                 sortby = value;
                 return;
             }
-            if (field == "page") {
+            if (key == "page") {
                 page = Number(value);
                 return;
             }
-            if (field.indexOf("@") != -1) {
-                /* Arrays of objects:
-                 {
-                   one: [
-                          {
-                           field: value,
-                           foo: bar
-                          },
-                          {
-                           field: value2
-                          }
-                        ]
-                 }
-                */
-                var split_field = field.split("@");
-                console.log(split_field);
-                console.log(value);
-                reql = reql.filter(function(tb) {
-                    return tb(split_field[0]).contains(function(k) {
-                        var preliminary_expr = null;
-                        if (field.indexOf("$") != -1) {
-                            // If the field contains another object,
-                            // we use double indexing
-                            preliminary_expr = k(split_field[1].split("$")[0])(split_field[1].split("$")[1]);
-                        } else if (split_field.length == 2) {
-                            preliminary_expr = k(split_field[1]);
-                        } else if (split_field.length == 3) {
-                            // If the field is another array, we go
-                            // another level down
-                            return k(split_field[1]).contains(function(j) {
-                                return j(split_field[2]).eq(value);
-                            });
-                        } else {
-                            res.status(404);
-                        }
-                        if (neq) {
-                            return preliminary_expr.ne(value);
-                        } else {
-                            return preliminary_expr.eq(value);
-                        }
-                    });
+            if (key == "search") {
+                reql = reql.filter(function(doc) {
+                    return doc("name").match("(?i)" + value).or(doc("code").match("(?i)" + value))
                 });
                 return;
             }
-            if (!isNaN(value)) {
-                queries[field] = Number(value);
-            } else if (value == "true") {
-                queries[field] = true;
-            } else if (value == "false") {
-                queries[field] = false;
+            // Ordinary case handling -- for when the key is a field
+            // on the course objects
+            if (matching == "exact") {
+                reql = reql.filter(r.row(key).eq(value));
+            } else if (matching == "inexact") {
+                reql = reql.filter(function(doc) {
+                    return doc(key).match("(?i)" + value);
+                });
             } else {
-                queries[field] = value;
+                console.log("No matching specified for key " + type + "! Skipping...");
+                return;
             }
-        });
-
-        Object.keys(queries).forEach(function(key) {
-            var value = queries[key];
-            reql = reql.filter(function(doc) {
-                return doc(key).match("(?i)" + value)
-            });
-            /* reql = reql.filter(r.row(key).eq(value)); */
         });
 
         reql = reql.limit(50);

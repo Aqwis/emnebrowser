@@ -15,7 +15,12 @@
 </div>
 
 <div id="toolbar">
-    <span class="toolbar-content">Søk: <input data-bind="value: searchString"/></span>
+    <span class="toolbar-content">
+        Søk: <input data-bind="value: searchString"/>
+        <select data-bind="value: credit, options: creditOptions, optionsCaption: 'Studiepoeng'"></select>
+        <select data-bind="value: studyLevel, options: studyLevelOptions,
+            optionsText: function(i) { return i.name; }, optionsCaption: 'Nivå'"></select>
+    </span>
 </div>
 
 <div id="content" data-bind="html: tableHTML">
