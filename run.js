@@ -42,7 +42,7 @@ function main() {
     app.get('/api/', function(req, page) {
         var query = req.query;
         var orderBy = null;
-        var page_count = 0;
+        var results = 0;
 
         // We go through each entry in query and
         // filter for each entry
@@ -60,8 +60,12 @@ function main() {
                 orderBy = value;
                 return;
             }
-            if (key == "page") {
-                page = Number(value);
+            if (key == "results") {
+                if (Number(value) > 1000) {
+                    results = 1000;
+                } else {
+                    results = Number(value);
+                }
                 return;
             }
             if (key == "search") {
@@ -88,7 +92,7 @@ function main() {
             reql = reql.orderBy(orderBy);
         }
 
-        reql = reql.limit(50);
+        reql = reql.limit(results);
         reql.run(connection, function(err, c) {
             if (err) console.log(err);
             c.toArray(function(err, result) {

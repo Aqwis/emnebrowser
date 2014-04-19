@@ -1,8 +1,6 @@
 function ViewModel() {
     var self = this;
 
-    self.tableTemplate = "";
-
     self.courses = ko.observableArray([]);
     self.getCourses = ko.computed(function() {
         console.log("Fetching courses...");
@@ -13,8 +11,8 @@ function ViewModel() {
 
     // Course info pane
     self.curentInfoPane = ko.observable("");
-    self.onRowClick = function(course, event) {
-        console.log(event);
+    self.onHeaderClick = function(course, event) {
+        self.orderBy(event.currentTarget.id.split("-")[1]);
     }
 
     // Table field values
@@ -80,11 +78,20 @@ function ViewModel() {
             ]);
     self.semesterOptions = ko.observableArray(["Høst", "Vår"]);
 
+    // Reset numberOfResults each time the filter is changed
+    self.resetNumberOfResults = function() {
+        self.numberOfResults(100);
+    }
+
     // Filter state
     self.orderBy = ko.observable("code");
+    self.numberOfResults = ko.observable(100);
     self.searchString = ko.observable("");
+    self.searchString.subscribe(self.resetNumberOfResults);
     self.credit = ko.observable();
+    self.credit.subscribe(self.resetNumberOfResults);
     self.studyLevel = ko.observable();
+    self.studyLevel.subscribe(self.resetNumberOfResults);
     self.studyLevelCode = ko.computed(function() {
         // Hack to get queryString working properly
         if (self.studyLevel()) {
@@ -94,6 +101,7 @@ function ViewModel() {
         }
     });
     self.semester = ko.observable();
+    self.semester.subscribe(self.resetNumberOfResults);
     self.taughtInAutumn = ko.computed(function() {
         if (self.semester() == "Høst") {
             return true;
@@ -121,6 +129,11 @@ function ViewModel() {
             orderBy: {
                 value: self.orderBy(),
                 type: "string",
+                matching: "exact"
+            },
+            results: {
+                value: self.numberOfResults(),
+                type: "number",
                 matching: "exact"
             },
             search: {
@@ -155,11 +168,10 @@ function ViewModel() {
 $(function() {
     vm = new ViewModel();
     ko.applyBindings(vm);
-
-    // Initially, retrieve the table template
-    // and get some unfiltered data
-    $.get("static/table.html", function(data) {
-        vm.tableTemplate = data;
-        vm.getCourses();
+    vm.getCourses();
+    $(window).scroll(function(){
+        if ($(window).scrollTop() > ($(document).height() - $(window).height())*0.90) {
+           vm.numberOfResults(vm.numberOfResults() + 100);
+        }
     });
 });

@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="stylesheet" href="static/style.css">
-<link rel="stylesheet" href="static/font-awesome/css/font-awesome.min.css">
-<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
-<script type="text/javascript" src="static/knockout-3.0.0.js"></script>
-<script type="text/javascript" src="static/swig.min.js"></script>
-<script type="text/javascript" src="static/main.js"></script>
+    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="static/font-awesome/css/font-awesome.min.css">
+    <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+    <script type="text/javascript" src="static/knockout-3.0.0.js"></script>
+    <script type="text/javascript" src="static/main.js"></script>
 </head>
 <body>
 
@@ -27,15 +26,15 @@
 <div id="content">
 <table id="main-table">
     <tr class="table-header">
-        <th>Kode</th>
-        <th>Navn</th>
-        <th>Semester</th>
-        <th>Språk</th>
-        <th>Obligatorisk arbeid</th>
-        <th>Vurderingsform</th>
-        <th>SP</th>
-        <th></th>
-        <th></th>
+        <th id="header-code" data-bind="click: onHeaderClick">Kode</th>
+        <th id="header-name" data-bind="click: onHeaderClick">Navn</th>
+        <th id="header-semester" data-bind="click: onHeaderClick">Semester</th>
+        <th id="header-language" data-bind="click: onHeaderClick">Språk</th>
+        <th id="header-mandatory" data-bind="click: onHeaderClick">Obligatorisk arbeid</th>
+        <th id="header-grading" data-bind="click: onHeaderClick">Vurderingsform</th>
+        <th id="header-credit" data-bind="click: onHeaderClick">SP</th>
+        <th id="header-moreinfo"></th>
+        <th id="header-timetable"></th>
     </tr>
     <!-- ko foreach: courses -->
     <tr id="row-{{ course.code }}">
