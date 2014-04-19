@@ -41,7 +41,7 @@ function main() {
     // Routing
     app.get('/api/', function(req, page) {
         var query = req.query;
-        var sortby = null;
+        var orderBy = null;
         var page_count = 0;
 
         // We go through each entry in query and
@@ -56,8 +56,8 @@ function main() {
                 return;
             }
             // Special cases
-            if (key == "sortby") {
-                sortby = value;
+            if (key == "orderBy") {
+                orderBy = value;
                 return;
             }
             if (key == "page") {
@@ -83,6 +83,10 @@ function main() {
                 return;
             }
         });
+
+        if (orderBy != null) {
+            reql = reql.orderBy(orderBy);
+        }
 
         reql = reql.limit(50);
         reql.run(connection, function(err, c) {

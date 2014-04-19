@@ -20,10 +20,38 @@
         <select data-bind="value: credit, options: creditOptions, optionsCaption: 'Studiepoeng'"></select>
         <select data-bind="value: studyLevel, options: studyLevelOptions,
             optionsText: function(i) { return i.name; }, optionsCaption: 'Nivå'"></select>
+        <select data-bind="value: semester, options: semesterOptions, optionsCaption: 'Semester'"></select>
     </span>
 </div>
 
-<div id="content" data-bind="html: tableHTML">
+<div id="content">
+<table id="main-table">
+    <tr class="table-header">
+        <th>Kode</th>
+        <th>Navn</th>
+        <th>Semester</th>
+        <th>Språk</th>
+        <th>Obligatorisk arbeid</th>
+        <th>Vurderingsform</th>
+        <th>SP</th>
+        <th></th>
+        <th></th>
+    </tr>
+    <!-- ko foreach: courses -->
+    <tr id="row-{{ course.code }}">
+        <td data-bind="text: code"></td>
+        <td data-bind="text: name"></td>
+        <td data-bind="text: $parent.valSemester($data)"></td>
+        <td data-bind="text: $parent.valLanguage($data)"></td>
+        <td data-bind="text: $parent.valMandatoryActivity($data, true)"></td>
+        <!-- ko if: typeof assessment != 'undefined' --><td data-bind="text: assessment[0].codeName"></td><!-- /ko -->
+        <!-- ko if: typeof assessment == 'undefined' --><td>?</td><!-- /ko -->
+        <td data-bind="text: credit"></td>
+        <td class="td-url"><a data-bind="attr: {href: 'http://www.ntnu.no/studier/emner/' + code}"><i class="fa fa-external-link"></i></a></td>
+        <td class="td-url"><a data-bind="attr: {href: 'http://www.ntnu.no/studier/emner/' + code + '#tab=timeplan'}"><i class="fa fa-calendar"></i></a></td>
+    </tr>
+    <!-- /ko -->
+</table>
 </div>
 
 </body>
