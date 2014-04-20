@@ -20,15 +20,12 @@ function stringToType(string, type) {
 }
 
 function main() {
+    app.use(express.compress());
+
     app.engine('html', swig.renderFile);
     app.set('view engine', 'html');
     app.set('views', __dirname + '/views');
 
-    // Caching temporarily turned off
-    app.set('view cache', false);
-    swig.setDefaults({ cache: false });
-
-    // Connect to database
     var connection = null;
     r.connect({host: 'localhost', port: 28015}, function(err, conn) {
         if (err) throw err;
@@ -55,7 +52,7 @@ function main() {
             if (!value) {
                 return;
             }
-            // Special cases
+            // Special keys
             if (key == "orderBy") {
                 orderBy = value;
                 return;
@@ -74,7 +71,7 @@ function main() {
                 });
                 return;
             }
-            // Ordinary case handling -- for when the key is a field
+            // Normal case -- for when the key is a field
             // on the course objects
             if (matching == "exact") {
                 reql = reql.filter(r.row(key).eq(value));
@@ -93,7 +90,7 @@ function main() {
         }
 
         reql = reql.limit(results);
-        reql.run(connection, function(err, c) {
+        reql.run(connection, {durability: "soft", useOutdated: true}, function(err, c) {
             if (err) console.log(err);
             c.toArray(function(err, result) {
                 page.send(result);

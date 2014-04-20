@@ -2,11 +2,13 @@ function ViewModel() {
     var self = this;
 
     self.courses = ko.observableArray([]);
+    self.ongoingRequests = [];
     self.getCourses = ko.computed(function() {
         console.log("Fetching courses...");
-        $.getJSON("http://horda.land:5000/api/?" + self.queryString(), function(data) {
+        var req = $.getJSON("http://horda.land:5000/api/?" + self.queryString(), function(data) {
             self.courses(data);
         });
+        self.ongoingRequests.push(req);
     }, this, { deferEvaluation: true });
 
     // Course info pane
@@ -70,6 +72,9 @@ function ViewModel() {
     // Filter variables 
     self.creditOptions = ko.observableArray([7.5, 10, 15, 22.5, 30, 45, 52.5, 60]);
     self.studyLevelOptions = ko.observableArray([
+            {code: "50", name: "Norsk for utenlandske studenter"},
+            {code: "70", name: "Examen philosophicum"},
+            {code: "90", name: "Lavere grad, redskapskurs"},
             {code: "100", name: "Grunnleggende emner, nivå I"},
             {code: "200", name: "Videregående emner, nivå II"},
             {code: "300", name: "Tredjeårsemner, nivå III"},
@@ -80,6 +85,11 @@ function ViewModel() {
 
     // Reset numberOfResults each time the filter is changed
     self.resetNumberOfResults = function() {
+        // Stop all previous requests
+        for (var i = 0; i < self.ongoingRequests.length; i++) {
+            self.ongoingRequests[i].abort();
+            console.log("Stopped request!");
+        }
         self.numberOfResults(100);
     }
 

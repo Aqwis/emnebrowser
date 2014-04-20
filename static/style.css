@@ -1,44 +1,46 @@
-* {
-    font-family: Verdana, Tahoma, sans-serif;
-    margin: 0;
-    padding: 0;
-}
+@import url(http://fonts.googleapis.com/css?family=Bitter:400,700,400italic);
 
 h1 {
-    font-size: 2em;
+    font-family: Verdana, sans-serif;
 }
 
-p, li, th, td, span.toolbar-content {
-    font-size: 0.8em;
+div.header {
+    /* background-color: #444466; */
 }
 
 div#toolbar {
-    background-color: #ddd;
-    padding: 5px;
+    padding-top: 8px;
+    padding-bottom: 3px;
+    padding-left: 8px;
+    background-color: #333;
+}
+
+.form-control {
+    border-radius: 2px;
+}
+
+a.navbar-brand {
+    font-weight: 400;
+    font-size: 2em;
+    font-family: "Bitter", "Helvetica", "Arial", sans-serif;
+    /* color: #fff; */
+    color: #333;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 tr.table-header {
-    background-color: #ddd;
-}
-
-th, td {
-    padding: 5px 0 5px 0;
+    background-color: #333;
+    color: white;
 }
 
 td.td-url {
     text-align: center;
 }
 
-div#header {
-    padding: 1em;
-}
-
-div#header h1 {
-    font-size: 1em;
-    font-family: Verdana, Tahoma, sans-serif;
-    font-weight: 300;
-}
-
-table#main-table {
-    width: 100%;
+.container-custom {
+    margin-right: auto;
+    margin-left: auto;
+    padding-left: 5px;
+    padding-right: 5px;
 }

@@ -1,55 +1,67 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" href="static/style.css">
     <link rel="stylesheet" href="static/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="static/style.css">
     <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="static/knockout-3.0.0.js"></script>
     <script type="text/javascript" src="static/main.js"></script>
+    <title>NTNU emnevelger</title>
 </head>
 <body>
 
-<div id="header">
-    <h1>NTNU-fag</h1>
+<div class"navbar navbar-fixed-top">
+    <div class="container-fluid header">
+        <div class="navbar-header">
+            <a class="navbar-brand"><strong>NTNU</strong> <em>emnevelger</em></a>
+        </div>
+    </div>
 </div>
 
-<div id="toolbar">
-    <span class="toolbar-content">
-        Søk: <input data-bind="value: searchString"/>
-        <select data-bind="value: credit, options: creditOptions, optionsCaption: 'Studiepoeng'"></select>
-        <select data-bind="value: studyLevel, options: studyLevelOptions,
+<div class="container-custom">
+    <div class="form-inline" id="toolbar">
+        <input class="form-control" placeholder="Søk" data-bind="value: searchString"/>
+        <select class="form-control" data-bind="value: credit, options: creditOptions, optionsCaption: 'Studiepoeng'"></select>
+        <select class="form-control" data-bind="value: semester, options: semesterOptions, optionsCaption: 'Semester'"></select>
+        <select class="form-control" data-bind="value: studyLevel, options: studyLevelOptions,
             optionsText: function(i) { return i.name; }, optionsCaption: 'Nivå'"></select>
-        <select data-bind="value: semester, options: semesterOptions, optionsCaption: 'Semester'"></select>
-    </span>
+    </div>
 </div>
 
-<div id="content">
-<table id="main-table">
-    <tr class="table-header">
-        <th id="header-code" data-bind="click: onHeaderClick">Kode</th>
-        <th id="header-name" data-bind="click: onHeaderClick">Navn</th>
-        <th id="header-semester" data-bind="click: onHeaderClick">Semester</th>
-        <th id="header-language" data-bind="click: onHeaderClick">Språk</th>
-        <th id="header-mandatory" data-bind="click: onHeaderClick">Obligatorisk arbeid</th>
-        <th id="header-grading" data-bind="click: onHeaderClick">Vurderingsform</th>
-        <th id="header-credit" data-bind="click: onHeaderClick">SP</th>
-        <th id="header-moreinfo"></th>
-        <th id="header-timetable"></th>
-    </tr>
-    <!-- ko foreach: courses -->
-    <tr id="row-{{ course.code }}">
-        <td data-bind="text: code"></td>
-        <td data-bind="text: name"></td>
-        <td data-bind="text: $parent.valSemester($data)"></td>
-        <td data-bind="text: $parent.valLanguage($data)"></td>
-        <td data-bind="text: $parent.valMandatoryActivity($data, true)"></td>
-        <!-- ko if: typeof assessment != 'undefined' --><td data-bind="text: assessment[0].codeName"></td><!-- /ko -->
-        <!-- ko if: typeof assessment == 'undefined' --><td>?</td><!-- /ko -->
-        <td data-bind="text: credit"></td>
-        <td class="td-url"><a data-bind="attr: {href: 'http://www.ntnu.no/studier/emner/' + code}"><i class="fa fa-external-link"></i></a></td>
-        <td class="td-url"><a data-bind="attr: {href: 'http://www.ntnu.no/studier/emner/' + code + '#tab=timeplan'}"><i class="fa fa-calendar"></i></a></td>
-    </tr>
-    <!-- /ko -->
+<div class="container-custom" id="content">
+<table id="main-table" class="table table-hover">
+    <thead>
+        <tr class="table-header">
+            <th id="header-code" data-bind="click: onHeaderClick">Kode</th>
+            <th id="header-credit" data-bind="click: onHeaderClick">SP</th>
+            <th id="header-name" data-bind="click: onHeaderClick">Navn</th>
+            <th id="header-semester" data-bind="click: onHeaderClick">Semester</th>
+            <th id="header-language" data-bind="click: onHeaderClick">Språk</th>
+            <th id="header-mandatory" data-bind="click: onHeaderClick">Obligatorisk arbeid</th>
+            <th id="header-grading" data-bind="click: onHeaderClick">Vurderingsform</th>
+            <th id="header-level" data-bind="click: onHeaderClick">Nivå</th>
+            <th id="header-moreinfo"></th>
+            <th id="header-timetable"></th>
+        </tr>
+    </thead>
+    <tbody data-bind="foreach: courses">
+        <tr id="row-{{ course.code }}">
+            <td data-bind="text: code"></td>
+            <td data-bind="text: credit"></td>
+            <td data-bind="text: name"></td>
+            <td data-bind="text: $parent.valSemester($data)"></td>
+            <td data-bind="text: $parent.valLanguage($data)"></td>
+            <td data-bind="text: $parent.valMandatoryActivity($data, true)"></td>
+            <!-- ko if: typeof assessment != 'undefined' --><td data-bind="text: assessment[0].codeName"></td><!-- /ko -->
+            <!-- ko if: typeof assessment == 'undefined' --><td>?</td><!-- /ko -->
+            <td data-bind="text: studyLevelName"></td>
+            <td class="td-url"><a data-bind="attr: {href: 'http://www.ntnu.no/studier/emner/' + code}"><i class="fa fa-external-link"></i></a></td>
+            <td class="td-url"><a data-bind="attr: {href: 'http://www.ntnu.no/studier/emner/' + code + '#tab=timeplan'}"><i class="fa fa-calendar"></i></a></td>
+        </tr>
+    </tbody>
 </table>
 </div>
 
