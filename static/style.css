@@ -1,14 +1,16 @@
 @import url(http://fonts.googleapis.com/css?family=Bitter:400,700,400italic);
+@import url(http://fonts.googleapis.com/css?family=Cousine);
 
 div.header {
-    /* */
+    background-color: rgb(0, 50, 88);
 }
 
 div#toolbar {
     padding-top: 8px;
     padding-bottom: 3px;
     padding-left: 8px;
-    background-color: #333;
+    /*background-color: #dfdfdf;*/
+    background-color: #eee;
 }
 
 .form-control {
@@ -17,20 +19,24 @@ div#toolbar {
 
 a.navbar-brand {
     font-weight: 400;
-    font-size: 2em;
+    font-size: 1.5em;
     font-family: "Bitter", "Helvetica", "Arial", sans-serif;
-    color: #333;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    color: #eaeaea;
+    text-shadow: 0 3px 0 rgba(0,0,0,.25);
+}
+
+a.navbar-brand strong {
+    letter-spacing: 1px;
 }
 
 .table {
-    margin-bottom: 10px;
+    /*margin-bottom: 10px;*/
+    margin-bottom: 0px;
 }
 
 tr.table-header {
-    background-color: #333;
-    color: white;
+    /*background-color: #dfdfdf;*/
+    background-color: #eee;
 }
 
 tr#seemore-row {
@@ -45,21 +51,88 @@ p#seemore-text {
     margin: 10px 0 10px 0;
 }
 
+th {
+    border-bottom-color: rgb(210, 210, 210) !important;
+    border-bottom: none !important;
+}
+
+td:first-child, th:first-child {
+    padding-left: 10px !important;
+}
+
+td:last-child, th:last-child {
+    padding-right: 10px !important;
+}
+
+tbody {
+    min-height: 200px;
+}
+
 td.td-url {
     text-align: center;
+}
+
+/* Semester colours */
+
+td.fall {
+    background-color: #EBDF02;
+}
+
+td.spring {
+    background-color: #88E014;
+}
+
+/* Circles around letters/numbers */
+
+.circle {
+    -moz-border-radius: 15px;
+    -webkit-border-radius: 15px;
+    border-radius: 15px;
+    padding: 2px 5px 2px 5px;
+    border: 1px solid #aaa;
+    font-family: "Cousine", "Courier New", "Courier", monospace;
+}
+
+td > span.level500 {
+    background-color: #b4d8e7;
+}
+
+td > span.level100 {
+    background-color: #ffeeee;
+}
+
+td > span.level200 {
+    background-color: #ffcece;
+}
+
+td > span.level300 {
+    background-color: #ffaeae;
 }
 
 .container-custom {
     margin-right: auto;
     margin-left: auto;
-    padding-left: 5px;
-    padding-right: 5px;
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
 div#footer {
-    background-color: #333;
-    padding: 15px 15px 5px 30px;
-    color: white;
+    background-color: rgb(0, 50, 88);
+    padding: 15px 25px 5px 30px;
+    color: #eaeaea;
+}
+
+div#footer p {
+    display: inline-block;
+}
+
+span#footer-right {
+    float: right;
+    margin-top: -4px;
+}
+
+span#footer-right i {
+    padding-left: 10px;
 }
 
 div#footer-wrapper {

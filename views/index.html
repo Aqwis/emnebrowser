@@ -36,7 +36,7 @@
 </div>-->
 
 <div class="container-custom" id="content">
-<table id="main-table" class="table table-hover">
+<table id="main-table" class="table table-hover table-condensed">
     <thead>
         <tr class="table-header">
             <th id="header-code" data-bind="click: onHeaderClick">Kode</th>
@@ -44,7 +44,7 @@
             <th id="header-name" data-bind="click: onHeaderClick">Navn</th>
             <th id="header-semester" data-bind="click: onHeaderClick">Semester</th>
             <th id="header-language" data-bind="click: onHeaderClick">Språk</th>
-            <th id="header-mandatory" data-bind="click: onHeaderClick">Obligatorisk arbeid</th>
+            <th id="header-mandatory" data-bind="click: onHeaderClick">Oblig. arbeid</th>
             <th id="header-grading" data-bind="click: onHeaderClick">Vurderingsform</th>
             <th id="header-level" data-bind="click: onHeaderClick">Nivå</th>
             <th id="header-moreinfo"></th>
@@ -62,12 +62,17 @@
             <td data-bind="text: $parent.valMandatoryActivity($data, true), attr: {title: $parent.valMandatoryActivity($data, false)}"></td>
             <!-- ko if: typeof assessment != 'undefined' --><td data-bind="text: assessment[0].codeName"></td><!-- /ko -->
             <!-- ko if: typeof assessment == 'undefined' --><td>?</td><!-- /ko -->
-            <td data-bind="text: $parent.valStudyLevelShortname($data), attr: {title: studyLevelName}"></td>
+            <td><span data-bind="html: $parent.valStudyLevelShortname($data), attr: {title: studyLevelName, class: 'circle level' + studyLevelCode}"></span></td>
             <td class="td-url"><a target="_blank" data-bind="attr: {href: 'http://www.ntnu.no/studier/emner/' + code}"><i class="fa fa-external-link"></i></a></td>
             <td class="td-url"><a target="_blank" data-bind="attr: {href: 'http://www.ntnu.no/studier/emner/' + code + '#tab=timeplan'}"><i class="fa fa-calendar"></i></a></td>
         </tr>
         <!-- /ko -->
-        <tr id="seemore-row" data-bind="click: onMoreClick()">
+        <!-- ko if: courses().length == 0 -->
+        <tr id="no-results-row">
+            <td colspan=10>Det var dessverre ingen resultater.</td>
+        </tr>
+        <!-- /ko -->
+        <tr id="seemore-row" data-bind="click: onMoreClick">
             <td colspan=10><p id="seemore-text">Se flere emner</p></td>
         </tr>
     </tbody>
@@ -77,6 +82,7 @@
 <div id="footer-wrapper" class="container-custom">
     <div id="footer">
         <p><em>NTNU emnevelger</em> er ikke offisielt tilknyttet NTNU.</p>
+        <span id="footer-right"><i class="fa fa-envelope-o fa-2x"></i><i class="fa fa-facebook-square fa-2x"></i></span>
     </div>
 </div>
 
