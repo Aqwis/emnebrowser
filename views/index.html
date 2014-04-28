@@ -31,6 +31,10 @@
     </div>
 </div>
 
+<!--<div class="container-custom" id="loading-pane">
+    <p>Laster...</p>
+</div>-->
+
 <div class="container-custom" id="content">
 <table id="main-table" class="table table-hover">
     <thead>
@@ -47,22 +51,33 @@
             <th id="header-timetable"></th>
         </tr>
     </thead>
-    <tbody data-bind="foreach: courses">
+    <tbody>
+        <!-- ko foreach: courses -->
         <tr id="row-{{ course.code }}">
             <td data-bind="text: code"></td>
             <td data-bind="text: credit"></td>
             <td data-bind="text: name"></td>
             <td data-bind="text: $parent.valSemester($data)"></td>
             <td data-bind="text: $parent.valLanguage($data)"></td>
-            <td data-bind="text: $parent.valMandatoryActivity($data, true)"></td>
+            <td data-bind="text: $parent.valMandatoryActivity($data, true), attr: {title: $parent.valMandatoryActivity($data, false)}"></td>
             <!-- ko if: typeof assessment != 'undefined' --><td data-bind="text: assessment[0].codeName"></td><!-- /ko -->
             <!-- ko if: typeof assessment == 'undefined' --><td>?</td><!-- /ko -->
-            <td data-bind="text: studyLevelName"></td>
-            <td class="td-url"><a data-bind="attr: {href: 'http://www.ntnu.no/studier/emner/' + code}"><i class="fa fa-external-link"></i></a></td>
-            <td class="td-url"><a data-bind="attr: {href: 'http://www.ntnu.no/studier/emner/' + code + '#tab=timeplan'}"><i class="fa fa-calendar"></i></a></td>
+            <td data-bind="text: $parent.valStudyLevelShortname($data), attr: {title: studyLevelName}"></td>
+            <td class="td-url"><a target="_blank" data-bind="attr: {href: 'http://www.ntnu.no/studier/emner/' + code}"><i class="fa fa-external-link"></i></a></td>
+            <td class="td-url"><a target="_blank" data-bind="attr: {href: 'http://www.ntnu.no/studier/emner/' + code + '#tab=timeplan'}"><i class="fa fa-calendar"></i></a></td>
+        </tr>
+        <!-- /ko -->
+        <tr id="seemore-row" data-bind="click: onMoreClick()">
+            <td colspan=10><p id="seemore-text">Se flere emner</p></td>
         </tr>
     </tbody>
 </table>
+</div>
+
+<div id="footer-wrapper" class="container-custom">
+    <div id="footer">
+        <p><em>NTNU emnevelger</em> er ikke offisielt tilknyttet NTNU.</p>
+    </div>
 </div>
 
 </body>

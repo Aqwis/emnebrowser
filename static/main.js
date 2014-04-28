@@ -5,7 +5,7 @@ function ViewModel() {
     self.ongoingRequests = [];
     self.getCourses = ko.computed(function() {
         console.log("Fetching courses...");
-        var req = $.getJSON("http://horda.land:5000/api/?" + self.queryString(), function(data) {
+        var req = $.getJSON("/api/?" + self.queryString(), function(data) {
             self.courses(data);
         });
         self.ongoingRequests.push(req);
@@ -15,6 +15,10 @@ function ViewModel() {
     self.curentInfoPane = ko.observable("");
     self.onHeaderClick = function(course, event) {
         self.orderBy(event.currentTarget.id.split("-")[1]);
+    }
+
+    self.onMoreClick = function() {
+       vm.numberOfResults(vm.numberOfResults() + 50);
     }
 
     // Table field values
@@ -69,17 +73,26 @@ function ViewModel() {
         }
     }
 
+    self.valStudyLevelShortname = function(course) {
+        var levelCode = course.studyLevelCode;
+        var studyLevelObj = self.studyLevelOptions().filter(function(obj) {
+            return obj.code == levelCode;
+        })[0];
+        console.log(studyLevelObj);
+        return studyLevelObj.shortname;
+    }
+
     // Filter variables 
     self.creditOptions = ko.observableArray([7.5, 10, 15, 22.5, 30, 45, 52.5, 60]);
     self.studyLevelOptions = ko.observableArray([
-            {code: "50", name: "Norsk for utenlandske studenter"},
-            {code: "70", name: "Examen philosophicum"},
-            {code: "90", name: "Lavere grad, redskapskurs"},
-            {code: "100", name: "Grunnleggende emner, nivå I"},
-            {code: "200", name: "Videregående emner, nivå II"},
-            {code: "300", name: "Tredjeårsemner, nivå III"},
-            {code: "500", name: "Høyere grads nivå"},
-            {code: "900", name: "Doktorgrads nivå"}
+            {code: "50", name: "Norsk for utenlandske studenter", shortname: "NUS"},
+            {code: "70", name: "Examen philosophicum", shortname: "EXPHIL"},
+            {code: "90", name: "Lavere grad, redskapskurs", shortname: "LAVERE"},
+            {code: "100", name: "Grunnleggende emner, nivå I", shortname: "NIVÅ I"},
+            {code: "200", name: "Videregående emner, nivå II", shortname: "NIVÅ II"},
+            {code: "300", name: "Tredjeårsemner, nivå III", shortname: "NIVÅ III"},
+            {code: "500", name: "Høyere grads nivå", shortname: "HØYERE"},
+            {code: "900", name: "Doktorgrads nivå", shortname: "DOKTOR"}
             ]);
     self.semesterOptions = ko.observableArray(["Høst", "Vår"]);
 
@@ -90,12 +103,12 @@ function ViewModel() {
             self.ongoingRequests[i].abort();
             console.log("Stopped request!");
         }
-        self.numberOfResults(100);
+        self.numberOfResults(50);
     }
 
     // Filter state
     self.orderBy = ko.observable("code");
-    self.numberOfResults = ko.observable(100);
+    self.numberOfResults = ko.observable(50);
     self.searchString = ko.observable("");
     self.searchString.subscribe(self.resetNumberOfResults);
     self.credit = ko.observable();
@@ -179,9 +192,4 @@ $(function() {
     vm = new ViewModel();
     ko.applyBindings(vm);
     vm.getCourses();
-    $(window).scroll(function(){
-        if ($(window).scrollTop() > ($(document).height() - $(window).height())*0.90) {
-           vm.numberOfResults(vm.numberOfResults() + 100);
-        }
-    });
 });
