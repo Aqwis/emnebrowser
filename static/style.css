@@ -143,3 +143,7 @@ div#loading-pane {
     background-color: #eee;
     min-height: 600px;
 }
+
+span.vertical-divider {
+    margin: 0 10px 0 5px;
+}

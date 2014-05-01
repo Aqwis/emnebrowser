@@ -64,15 +64,25 @@ function ViewModel() {
             if (hasGradedProject) {
                 mandatoryActivityText = "Kun tellende";
             } else {
-                mandatoryActivityText = "Ingen";
+                mandatoryActivityText = "";
             }
         } else {
             mandatoryActivityText = mandatoryActivities.join(", ");
         }
-        if (truncate && mandatoryActivityText.length > 19) {
-            return mandatoryActivityText.substr(0, 18) + "...";
+        if (truncate) {
+            if (mandatoryActivityText == "Kun tellende") {
+                return "Kun tellende";
+            } else if (mandatoryActivityText == "") {
+                return "Nei";
+            } else {
+                return "Ja";
+            }
         } else {
-            return mandatoryActivityText;
+            if (mandatoryActivityText == "Kun tellende") {
+                return "";
+            } else {
+                return mandatoryActivityText;
+            }
         }
     }
 

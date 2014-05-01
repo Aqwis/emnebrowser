@@ -24,8 +24,13 @@
 <div class="container-custom">
     <div class="form-inline" id="toolbar">
         <input class="form-control" placeholder="Søk" data-bind="value: searchString"/>
+        <select class="form-control" data-bind="value: studyLevel, options: studyLevelOptions, optionsCaption: 'Fagområde'"></select>
+        <span class="vertical-divider"></span>
         <select class="form-control" data-bind="value: credit, options: creditOptions, optionsCaption: 'Studiepoeng'"></select>
         <select class="form-control" data-bind="value: semester, options: semesterOptions, optionsCaption: 'Semester'"></select>
+        <span class="vertical-divider"></span>
+        <select class="form-control" data-bind="value: studyLevel, options: studyLevelOptions, optionsCaption: 'Oblig. arbeid'"></select>
+        <select class="form-control" data-bind="value: studyLevel, options: studyLevelOptions, optionsCaption: 'Vurderingsform'"></select>
         <select class="form-control" data-bind="value: studyLevel, options: studyLevelOptions,
             optionsText: function(i) { return i.name; }, optionsCaption: 'Nivå'"></select>
     </div>
@@ -81,7 +86,7 @@
 
 <div id="footer-wrapper" class="container-custom">
     <div id="footer">
-        <p><em>NTNU emnevelger</em> er ikke offisielt tilknyttet NTNU.</p>
+        <p><em>NTNU emnevelger</em> er ikke offisielt tilknyttet NTNU. Dataen som benyttes er hentet fra <a href="http://www.ime.ntnu.no/api/">IMEs emne-API</a>.</p>
         <span id="footer-right"><i class="fa fa-envelope-o fa-2x"></i><i class="fa fa-facebook-square fa-2x"></i></span>
     </div>
 </div>
