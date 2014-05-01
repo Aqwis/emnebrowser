@@ -1,3 +1,27 @@
+ko.bindingHandlers.multiselect = {
+    // https://github.com/davidstutz/bootstrap-multiselect/issues/193
+    init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+        //
+    },
+    update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+        var selectOptions = allBindingsAccessor().options();
+        var title = allBindingsAccessor().title;
+        var ms = $(element).data('multiselect');
+        var config = {
+            buttonText: function() { return (title + ' <b class="caret"></b>'); }
+        }
+
+        if (!ms) {
+            $(element).multiselect(config);
+        } else {
+            ms.updateOriginalOptions();
+            if (selectOptions && selectOptions.length !== ms.originalOptions.length) {
+                $(element).multiselect('rebuild');
+            }
+        }
+    }
+};
+
 function ViewModel() {
     var self = this;
 
@@ -7,7 +31,6 @@ function ViewModel() {
         console.log("Fetching courses...");
         var req = $.getJSON("/api/?" + self.queryString(), function(data) {
             self.courses(data);
-            console.log(self.courses.peek().length);
         });
         self.ongoingRequests.push(req);
     }, this, { deferEvaluation: true });
@@ -33,14 +56,27 @@ function ViewModel() {
     }
 
     self.valSemester = function(course) {
-        if (course.taughtInAutumn) {
-            if (course.taughtInSpring) {
+        var taughtInAutumn = false;
+        var taughtInSpring = false;
+
+        if (typeof(course.educationTerm) != "undefined") {
+            course.educationTerm.forEach(function(val) {
+                if (val.startTerm == "Autumn") {
+                    taughtInAutumn = true;
+                } else if (val.startTerm == "Spring") {
+                    taughtInSpring = true;
+                }
+            });
+    
+            if (taughtInAutumn && taughtInSpring) {
                 return "Begge";
-            } else {
+            } else if (taughtInAutumn) {
                 return "Høst";
+            } else if (taughtInSpring) {
+                return "Vår";
             }
         } else {
-            return "Vår"
+            return "-";
         }
     }
 
@@ -95,7 +131,7 @@ function ViewModel() {
     }
 
     // Filter variables 
-    self.creditOptions = ko.observableArray([7.5, 10, 15, 22.5, 30, 45, 52.5, 60]);
+    self.creditOptions = ko.observableArray([0.0, 7.5, 10, 15, 22.5, 30, 45, 52.5, 60]);
     self.studyLevelOptions = ko.observableArray([
             {code: "50", name: "Norsk for utenlandske studenter", shortname: "NUS"},
             {code: "70", name: "Examen philosophicum", shortname: "EXP"},
@@ -103,6 +139,7 @@ function ViewModel() {
             {code: "100", name: "Grunnleggende emner, nivå I", shortname: "&nbsp;1&nbsp;"},
             {code: "200", name: "Videregående emner, nivå II", shortname: "&nbsp;2&nbsp;"},
             {code: "300", name: "Tredjeårsemner, nivå III", shortname: "&nbsp;3&nbsp;"},
+            {code: "350", name: "Praktisk pedagogisk utdanning", shortname: "PPU"},
             {code: "500", name: "Høyere grads nivå", shortname: "HØY"},
             {code: "900", name: "Doktorgrads nivå", shortname: "DOK"}
             ]);
@@ -123,84 +160,60 @@ function ViewModel() {
     self.numberOfResults = ko.observable(50);
     self.searchString = ko.observable("");
     self.searchString.subscribe(self.resetNumberOfResults);
-    self.credit = ko.observable();
+
+    self.credit = ko.observableArray();
     self.credit.subscribe(self.resetNumberOfResults);
-    self.studyLevel = ko.observable();
+    self.studyLevel = ko.observableArray();
     self.studyLevel.subscribe(self.resetNumberOfResults);
     self.studyLevelCode = ko.computed(function() {
         // Hack to get queryString working properly
         if (self.studyLevel()) {
-            return self.studyLevel().code;
+            return self.studyLevel().map(function(i) {
+                return i.code;
+            });
         } else {
-            return ""
+            return []
         }
     });
     self.semester = ko.observable();
     self.semester.subscribe(self.resetNumberOfResults);
-    self.taughtInAutumn = ko.computed(function() {
-        if (self.semester() == "Høst") {
-            return true;
-        } else {
-            return false;
-        }
-    });
-    self.taughtInSpring = ko.computed(function() {
-        if (self.semester() == "Spring") {
-            return true;
-        } else {
-            return false;
-        }
-    });
 
     self.queryString = ko.computed(function() {
         return $.param({
             /* example: {
                 value: self.example(), // mandatory
                 type: "string", // mandatory; can also be "boolean" or "number"
-                matching: "inexact" // mandatory; can also be "exact"
-                hierarchy: "educationalRole/person",
-                hierarchyMatching: "any", // can also be "all"
             } */
             orderBy: {
                 value: self.orderBy(),
                 type: "string",
-                matching: "exact"
             },
             results: {
                 value: self.numberOfResults(),
                 type: "number",
-                matching: "exact"
             },
             search: {
                 value: self.searchString(),
                 type: "string",
-                matching: "inexact"
             },
             credit: {
                 value: self.credit(),
                 type: "number",
-                matching: "exact"
             },
             studyLevelCode: {
                 value: self.studyLevelCode(),
                 type: "string",
-                matching: "exact"
             },
-            taughtInAutumn: {
-                value: self.taughtInAutumn(),
-                type: "boolean",
-                matching: "exact"
-            },
-            taughtInSpring: {
-                value: self.taughtInSpring(),
-                type: "boolean",
-                matching: "exact"
+            semester: {
+                value: self.semester(),
+                type: "string",
             }
         });
     }, this);
 }
 
 $(function() {
+    /* $('.multiselect').multiselect(); */
     vm = new ViewModel();
     ko.applyBindings(vm);
     vm.getCourses();

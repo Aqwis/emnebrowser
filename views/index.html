@@ -5,8 +5,10 @@
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="static/bootstrap-multiselect.css">
     <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="static/bootstrap-multiselect.js"></script>
     <script type="text/javascript" src="static/knockout-3.0.0.js"></script>
     <script type="text/javascript" src="static/main.js"></script>
     <title>NTNU emnevelger</title>
@@ -24,15 +26,14 @@
 <div class="container-custom">
     <div class="form-inline" id="toolbar">
         <input class="form-control" placeholder="Søk" data-bind="value: searchString"/>
-        <select class="form-control" data-bind="value: studyLevel, options: studyLevelOptions, optionsCaption: 'Fagområde'"></select>
+        <select class="multiselect form-control" multiple="multiple" data-bind="selectedOptions: studyLevel, options: studyLevelOptions, title: 'Fagområde', multiselect"></select>
         <span class="vertical-divider"></span>
-        <select class="form-control" data-bind="value: credit, options: creditOptions, optionsCaption: 'Studiepoeng'"></select>
+        <select class="form-control multiselect" multiple="multiple" data-bind="selectedOptions: credit, options: creditOptions, title: 'Studiepoeng', multiselect"></select>
         <select class="form-control" data-bind="value: semester, options: semesterOptions, optionsCaption: 'Semester'"></select>
         <span class="vertical-divider"></span>
-        <select class="form-control" data-bind="value: studyLevel, options: studyLevelOptions, optionsCaption: 'Oblig. arbeid'"></select>
-        <select class="form-control" data-bind="value: studyLevel, options: studyLevelOptions, optionsCaption: 'Vurderingsform'"></select>
-        <select class="form-control" data-bind="value: studyLevel, options: studyLevelOptions,
-            optionsText: function(i) { return i.name; }, optionsCaption: 'Nivå'"></select>
+        <select class="form-control multiselect" multiple="multiple" data-bind="selectedOptions: studyLevel, options: studyLevelOptions, title: 'Oblig. arbeid', multiselect"></select>
+        <select class="form-control multiselect" multiple="multiple" data-bind="selectedOptions: studyLevel, options: studyLevelOptions, title: 'Vurderingsform', multiselect"></select>
+        <select class="form-control multiselect" multiple="multiple" data-bind="selectedOptions: studyLevel, options: studyLevelOptions, optionsText: function(i) { return i.name; }, title: 'Nivå', multiselect"></select>
     </div>
 </div>
 
@@ -44,16 +45,16 @@
 <table id="main-table" class="table table-hover table-condensed">
     <thead>
         <tr class="table-header">
-            <th id="header-code" data-bind="click: onHeaderClick">Kode</th>
-            <th id="header-credit" data-bind="click: onHeaderClick">SP</th>
-            <th id="header-name" data-bind="click: onHeaderClick">Navn</th>
-            <th id="header-semester" data-bind="click: onHeaderClick">Semester</th>
-            <th id="header-language" data-bind="click: onHeaderClick">Språk</th>
-            <th id="header-mandatory" data-bind="click: onHeaderClick">Oblig. arbeid</th>
-            <th id="header-grading" data-bind="click: onHeaderClick">Vurderingsform</th>
-            <th id="header-level" data-bind="click: onHeaderClick">Nivå</th>
-            <th id="header-moreinfo"></th>
-            <th id="header-timetable"></th>
+            <th><span id="header-code" data-bind="click: onHeaderClick">Kode</span></th>
+            <th><span id="header-credit" data-bind="click: onHeaderClick">SP</span></th>
+            <th><span id="header-name" data-bind="click: onHeaderClick">Navn</span></th>
+            <th><span id="header-semester" data-bind="click: onHeaderClick">Semester</span></th>
+            <th><span id="header-language" data-bind="click: onHeaderClick">Språk</span></th>
+            <th><span id="header-mandatory" data-bind="click: onHeaderClick">Oblig. arbeid</span></th>
+            <th><span id="header-grading" data-bind="click: onHeaderClick">Vurderingsform</span></th>
+            <th><span id="header-level" data-bind="click: onHeaderClick">Nivå</span></th>
+            <th><span id="header-moreinfo"></span></th>
+            <th><span id="header-timetable"></span></th>
         </tr>
     </thead>
     <tbody>

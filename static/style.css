@@ -147,3 +147,18 @@ div#loading-pane {
 span.vertical-divider {
     margin: 0 10px 0 5px;
 }
+
+/* Flatten multiselect dropdowns */
+button.multiselect {
+    background-image: none !important;
+    border-radius: 2px !important;
+}
+
+ul.multiselect-container {
+    padding: 5px 5px 5px 5px;
+}
+
+ul.multiselect-container label {
+    padding-left: 5px !important;
+    width: 100%;
+}

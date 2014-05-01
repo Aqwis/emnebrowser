@@ -48,41 +48,70 @@ function main() {
         Object.keys(query).forEach(function(key) {
             var type = query[key].type;
             var matching = query[key].matching;
-            var value = stringToType(query[key].value, type);
+
+            // Convert value or value array elements to
+            // given type
+            var value = query[key].value;
             if (!value) {
                 return;
+            } else if (typeof(value) == "array") {
+                value = value.map(function(v) {
+                    stringToType(v, type);
+                });
+            } else {
+                value = stringToType(value, type);
             }
+
             // Special keys
             if (key == "orderBy") {
                 orderBy = value;
-                return;
-            }
-            if (key == "results") {
+            } else if (key == "results") {
                 if (Number(value) > 1000) {
                     results = 1000;
                 } else {
                     results = Number(value);
                 }
                 return;
-            }
-            if (key == "search") {
+            } else if (key == "search") {
                 reql = reql.filter(function(doc) {
                     return doc("name").match("(?i)" + value).or(doc("code").match("(?i)" + value))
                 });
                 return;
-            }
-            // Normal case -- for when the key is a field
-            // on the course objects
-            if (matching == "exact") {
-                reql = reql.filter(r.row(key).eq(value));
-            } else if (matching == "inexact") {
+            } else if (key == "semester") {
+                if (value == "Høst") {
+                    var engVal = "Autumn"
+                } else if (value == "Vår") {
+                    var engVal = "Spring";
+                }
                 reql = reql.filter(function(doc) {
-                    return doc(key).match("(?i)" + value);
+                    return doc("educationTerm").contains(function(k) {
+                        return k("startTerm").eq(engVal);
+                    });
+                });
+            } else if (key == "studyLevelCode") {
+                reql = reql.filter(function(doc) {
+                    if (value.indexOf(doc.studyLevelCode) > -1) {
+                        return doc;
+                    }
+                });
+                /*} else if (matching == "inexact") {
+                    reql = reql.filter(function(doc) {
+                        return doc(key).match("(?i)" + value);
+                    });
+                }*/
+            } else if (key == "credit") {
+                reql = reql.filter(function(doc) {
+                    if (value.indexOf(doc.credit) > -1) {
+                        return doc;
+                    }
                 });
             } else {
                 console.log("No matching specified for key " + type + "! Skipping...");
-                return;
             }
+
+            // Normal case -- for when the key is a field
+            // on the course objects
+
         });
 
         if (orderBy != null) {
