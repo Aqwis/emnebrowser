@@ -54,9 +54,9 @@ function main() {
             var value = query[key].value;
             if (!value) {
                 return;
-            } else if (typeof(value) == "array") {
+            } else if (value instanceof Array) {
                 value = value.map(function(v) {
-                    stringToType(v, type);
+                    return stringToType(v, type);
                 });
             } else {
                 value = stringToType(value, type);
@@ -90,9 +90,7 @@ function main() {
                 });
             } else if (key == "studyLevelCode") {
                 reql = reql.filter(function(doc) {
-                    if (value.indexOf(doc.studyLevelCode) > -1) {
-                        return doc;
-                    }
+                    return r.expr(value).contains(doc("studyLevelCode"));
                 });
                 /*} else if (matching == "inexact") {
                     reql = reql.filter(function(doc) {
@@ -101,9 +99,7 @@ function main() {
                 }*/
             } else if (key == "credit") {
                 reql = reql.filter(function(doc) {
-                    if (value.indexOf(doc.credit) > -1) {
-                        return doc;
-                    }
+                    return r.expr(value).contains(doc("credit"));
                 });
             } else {
                 console.log("No matching specified for key " + type + "! Skipping...");

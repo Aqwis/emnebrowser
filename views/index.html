@@ -7,9 +7,9 @@
     <link rel="stylesheet" href="static/style.css">
     <link rel="stylesheet" href="static/bootstrap-multiselect.css">
     <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+    <script type="text/javascript" src="static/knockout-3.1.0.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="static/bootstrap-multiselect.js"></script>
-    <script type="text/javascript" src="static/knockout-3.0.0.js"></script>
     <script type="text/javascript" src="static/main.js"></script>
     <title>NTNU emnevelger</title>
 </head>
@@ -26,14 +26,14 @@
 <div class="container-custom">
     <div class="form-inline" id="toolbar">
         <input class="form-control" placeholder="Søk" data-bind="value: searchString"/>
-        <select class="multiselect form-control" multiple="multiple" data-bind="selectedOptions: studyLevel, options: studyLevelOptions, title: 'Fagområde', multiselect"></select>
+        <select class="multiselect form-control" multiple="multiple" data-bind="selectedOptions: field, options: fieldOptions, multiselect: multiSelectInitOptions" title="Fagområde"></select>
         <span class="vertical-divider"></span>
-        <select class="form-control multiselect" multiple="multiple" data-bind="selectedOptions: credit, options: creditOptions, title: 'Studiepoeng', multiselect"></select>
-        <select class="form-control" data-bind="value: semester, options: semesterOptions, optionsCaption: 'Semester'"></select>
+        <select class="form-control multiselect" multiple="multiple" data-bind="selectedOptions: credit, options: creditOptions, multiselect: multiSelectInitOptions" title="Studiepoeng"></select>
+        <select class="form-control" data-bind="value: semester, options: semesterOptions, optionsCaption: 'Semester'" title="Semester"></select>
         <span class="vertical-divider"></span>
-        <select class="form-control multiselect" multiple="multiple" data-bind="selectedOptions: studyLevel, options: studyLevelOptions, title: 'Oblig. arbeid', multiselect"></select>
-        <select class="form-control multiselect" multiple="multiple" data-bind="selectedOptions: studyLevel, options: studyLevelOptions, title: 'Vurderingsform', multiselect"></select>
-        <select class="form-control multiselect" multiple="multiple" data-bind="selectedOptions: studyLevel, options: studyLevelOptions, optionsText: function(i) { return i.name; }, title: 'Nivå', multiselect"></select>
+        <select class="form-control multiselect" multiple="multiple" data-bind="selectedOptions: mandatoryActivities, options: mandatoryActivitiesOptions, multiselect: multiSelectInitOptions" title="Oblig. arbeid"></select>
+        <select class="form-control multiselect" multiple="multiple" data-bind="selectedOptions: assessment, options: assessmentOptions, multiselect: multiSelectInitOptions" title="Vurderingsform"></select>
+        <select class="form-control multiselect" multiple="multiple" data-bind="options: studyLevelOptionsProxy, selectedOptions: studyLevel, multiselect: multiSelectInitOptions" title="Nivå"></select>
     </div>
 </div>
 
@@ -88,7 +88,10 @@
 <div id="footer-wrapper" class="container-custom">
     <div id="footer">
         <p><em>NTNU emnevelger</em> er ikke offisielt tilknyttet NTNU. Dataen som benyttes er hentet fra <a href="http://www.ime.ntnu.no/api/">IMEs emne-API</a>.</p>
-        <span id="footer-right"><i class="fa fa-envelope-o fa-2x"></i><i class="fa fa-facebook-square fa-2x"></i></span>
+        <span id="footer-right">
+            <a href="mailto:trygvwii@stud.ntnu.no"><i class="fa fa-envelope-o fa-2x"></i></a>
+            <a href="blank"><i class="fa fa-facebook-square fa-2x"></i></a>
+        </span>
     </div>
 </div>
 

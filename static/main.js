@@ -1,27 +1,3 @@
-ko.bindingHandlers.multiselect = {
-    // https://github.com/davidstutz/bootstrap-multiselect/issues/193
-    init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-        //
-    },
-    update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-        var selectOptions = allBindingsAccessor().options();
-        var title = allBindingsAccessor().title;
-        var ms = $(element).data('multiselect');
-        var config = {
-            buttonText: function() { return (title + ' <b class="caret"></b>'); }
-        }
-
-        if (!ms) {
-            $(element).multiselect(config);
-        } else {
-            ms.updateOriginalOptions();
-            if (selectOptions && selectOptions.length !== ms.originalOptions.length) {
-                $(element).multiselect('rebuild');
-            }
-        }
-    }
-};
-
 function ViewModel() {
     var self = this;
 
@@ -34,6 +10,12 @@ function ViewModel() {
         });
         self.ongoingRequests.push(req);
     }, this, { deferEvaluation: true });
+
+    self.multiSelectInitOptions = {
+        buttonText: function(op, select) {
+            return (op.context.title + ' <b class="caret"></b>');
+        }
+    }
 
     // Course info pane
     self.curentInfoPane = ko.observable("");
@@ -133,17 +115,30 @@ function ViewModel() {
     // Filter variables 
     self.creditOptions = ko.observableArray([0.0, 7.5, 10, 15, 22.5, 30, 45, 52.5, 60]);
     self.studyLevelOptions = ko.observableArray([
-            {code: "50", name: "Norsk for utenlandske studenter", shortname: "NUS"},
+            {code: "50", name: "Norsk for utenlandske studenter", shortname: "NFU"},
             {code: "70", name: "Examen philosophicum", shortname: "EXP"},
             {code: "90", name: "Lavere grad, redskapskurs", shortname: "LAV"},
             {code: "100", name: "Grunnleggende emner, nivå I", shortname: "&nbsp;1&nbsp;"},
             {code: "200", name: "Videregående emner, nivå II", shortname: "&nbsp;2&nbsp;"},
             {code: "300", name: "Tredjeårsemner, nivå III", shortname: "&nbsp;3&nbsp;"},
             {code: "350", name: "Praktisk pedagogisk utdanning", shortname: "PPU"},
+            {code: "400", name: "Fjerdeårsemner, nivå IV", shortname: "&nbsp;4&nbsp;"},
             {code: "500", name: "Høyere grads nivå", shortname: "HØY"},
             {code: "900", name: "Doktorgrads nivå", shortname: "DOK"}
             ]);
+    /* bootstrap-multiselect DOES NOT work properly with observableArrays containing objects.
+    See this bug: https://github.com/davidstutz/bootstrap-multiselect/issues/149
+    Because of this, a proxy and a reverse proxy are needed to make things work. */
+    self.studyLevelOptionsProxy = ko.computed(function() {
+        var options = self.studyLevelOptions.peek();
+        return options.map(function(opt) {
+            return opt.name;
+        });
+    });
     self.semesterOptions = ko.observableArray(["Høst", "Vår"]);
+    self.fieldOptions = ko.observableArray(["Matematikk", "Fysikk"]);
+    self.mandatoryActivitiesOptions = ko.observableArray(["Ja", "Kun tellende", "Nei"]);
+    self.assessmentOptions = ko.observableArray(["Skriftlig eksamen", "Muntlig eksamen", "Arbeider", "Annet"]);
 
     // Reset numberOfResults each time the filter is changed
     self.resetNumberOfResults = function() {
@@ -166,17 +161,29 @@ function ViewModel() {
     self.studyLevel = ko.observableArray();
     self.studyLevel.subscribe(self.resetNumberOfResults);
     self.studyLevelCode = ko.computed(function() {
-        // Hack to get queryString working properly
+        // Reverse proxy for studyLevelOptionsProxy
         if (self.studyLevel()) {
-            return self.studyLevel().map(function(i) {
-                return i.code;
+            var options = self.studyLevelOptions.peek();
+            var selectedNames = self.studyLevel();
+            var selectedCodes = [];
+            options.forEach(function(opt) {
+                if (selectedNames.indexOf(opt.name) > -1) {
+                    selectedCodes.push(opt.code);
+                }
             });
+            return selectedCodes;
         } else {
             return []
         }
     });
     self.semester = ko.observable();
     self.semester.subscribe(self.resetNumberOfResults);
+    self.field = ko.observableArray();
+    self.field.subscribe(self.resetNumberOfResults);
+    self.mandatoryActivities = ko.observableArray();
+    self.mandatoryActivities.subscribe(self.resetNumberOfResults);
+    self.assessment = ko.observableArray();
+    self.assessment.subscribe(self.resetNumberOfResults);
 
     self.queryString = ko.computed(function() {
         return $.param({
@@ -186,27 +193,39 @@ function ViewModel() {
             } */
             orderBy: {
                 value: self.orderBy(),
-                type: "string",
+                type: "string"
             },
             results: {
                 value: self.numberOfResults(),
-                type: "number",
+                type: "number"
             },
             search: {
                 value: self.searchString(),
-                type: "string",
+                type: "string"
             },
             credit: {
                 value: self.credit(),
-                type: "number",
+                type: "number"
             },
             studyLevelCode: {
                 value: self.studyLevelCode(),
-                type: "string",
+                type: "string"
             },
             semester: {
                 value: self.semester(),
-                type: "string",
+                type: "string"
+            },
+            field: {
+                value: self.field(),
+                type: "string"
+            },
+            mandatoryActivities: {
+                value: self.mandatoryActivities(),
+                type: "string"
+            },
+            assessment: {
+                value: self.assessment(),
+                type: "string"
             }
         });
     }, this);

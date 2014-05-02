@@ -135,6 +135,10 @@ span#footer-right i {
     padding-left: 10px;
 }
 
+span#footer-right a:link {
+    color: inherit;
+}
+
 div#footer-wrapper {
     bottom: 0;
 }
