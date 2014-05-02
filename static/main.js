@@ -19,6 +19,7 @@ function ViewModel() {
 
     self.multiSelectInitSearchOptions = {
         enableFiltering: true,
+        filterPlaceholder: 'Søk',
         maxHeight: 300,
         enableCaseInsensitiveFiltering: true,
         buttonText: function(op, select) {
@@ -43,6 +44,58 @@ function ViewModel() {
             return "Engelsk";
         } else {
             return "Norsk";
+        }
+    }
+
+    self.valLecturer = function(course) {
+        var people = course.educationalRole;
+        if (typeof(people) == "undefined") {
+            return "?";
+        }
+        var coordinator = "";
+        var names = [];
+        people.forEach(function(person) {
+            if (typeof(person.person) != "undefined") {
+                if (person.code == "Coordinator") {
+                    coordinator = person.person.displayName;
+                }
+                names.push(person.person.displayName);
+            }
+        });
+        if (coordinator != "") {
+            if (names.length > 1) {
+                return coordinator + " m.fl.";
+            } else {
+                return coordinator;
+            }
+        } else if (names.length > 0) {
+            if (names.length > 1) {
+                return names[0] + " m.fl.";
+            } else {
+                return names[0];
+            }
+        } else {
+            return "?";
+        }
+    }
+
+    self.valExamDate = function(course) {
+        var assessment = course.assessment;
+        if (typeof(assessment) == "undefined") {
+            return "-";
+        }
+        var dates = [];
+        assessment.forEach(function(a) {
+            if (typeof(a.date) != "undefined") {
+                dates.push(a.date);
+            }
+        });
+        if (dates.length > 1) {
+            return "Flere";
+        } else if (dates.length == 1) {
+            return dates[0];
+        } else {
+            return "-";
         }
     }
 
@@ -160,7 +213,7 @@ function ViewModel() {
     }
 
     // Filter state
-    self.orderBy = ko.observable("code");
+    self.orderBy = ko.observable("name");
     self.numberOfResults = ko.observable(50);
     self.searchString = ko.observable("");
     self.searchString.subscribe(self.resetNumberOfResults);

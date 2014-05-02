@@ -2,10 +2,10 @@
 <html>
 <head>
     <link rel="stylesheet" href="static/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
-    <link rel="stylesheet" href="static/style.css">
     <link rel="stylesheet" href="static/bootstrap-multiselect.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <!--<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">-->
+    <link rel="stylesheet" href="static/style.css">
     <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
     <script type="text/javascript" src="static/knockout-3.1.0.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
@@ -27,14 +27,32 @@
 <div class="container-custom">
     <div class="form-inline" id="toolbar">
         <input class="form-control" placeholder="Søk" data-bind="value: searchString"/>
-        <select class="multiselect form-control" multiple="multiple" data-bind="selectedOptions: subjectArea, options: subjectAreaOptions, multiselect: multiSelectInitSearchOptions" title="Fagområde"></select>
+        <div class="btn-group">
+            <select class="multiselect form-control" multiple="multiple" data-bind="selectedOptions: subjectArea, options: subjectAreaOptions, multiselect: multiSelectInitSearchOptions" title="Fagområde"></select>
+            <button id="subjectArea-deselect" class="btn btn-default" data-bind="enable: subjectArea().length > 0"><i class="fa fa-times text-danger"></i></button>
+        </div>
         <span class="vertical-divider"></span>
-        <select class="form-control multiselect" multiple="multiple" data-bind="selectedOptions: credit, options: creditOptions, multiselect: multiSelectInitOptions" title="Studiepoeng"></select>
-        <select class="form-control" data-bind="value: semester, options: semesterOptions, optionsCaption: 'Semester'" title="Semester"></select>
+        <div class="btn-group">
+            <select class="form-control multiselect" multiple="multiple" data-bind="selectedOptions: credit, options: creditOptions, multiselect: multiSelectInitOptions" title="Studiepoeng"></select>
+            <button id="credit-deselect" class="btn btn-default" data-bind="enable: credit().length > 0"><i class="fa fa-times text-danger"></i></button>
+        </div>
+        <div class="btn-group">
+            <select class="form-control multiselect" data-bind="value: semester, options: semesterOptions, optionsCaption: 'Semester', multiselect" title="Semester"></select>
+            <button id="credit-deselect" class="btn btn-default" data-bind="enable: typeof(semester) != 'undefined'"><i class="fa fa-times text-danger"></i></button>
+        </div>
         <span class="vertical-divider"></span>
-        <select class="form-control multiselect" multiple="multiple" data-bind="selectedOptions: mandatoryActivities, options: mandatoryActivitiesOptions, multiselect: multiSelectInitOptions" title="Oblig. arbeid"></select>
-        <select class="form-control multiselect" multiple="multiple" data-bind="selectedOptions: assessment, options: assessmentOptions, multiselect: multiSelectInitOptions" title="Vurderingsform"></select>
-        <select class="form-control multiselect" multiple="multiple" data-bind="options: studyLevelOptionsProxy, selectedOptions: studyLevel, multiselect: multiSelectInitOptions" title="Nivå"></select>
+        <div class="btn-group">
+            <select class="form-control multiselect" multiple="multiple" data-bind="selectedOptions: mandatoryActivities, options: mandatoryActivitiesOptions, multiselect: multiSelectInitOptions" title="Oblig. arbeid"></select>
+            <button id="mandatoryActivities-deselect" class="btn btn-default" data-bind="enable: mandatoryActivities().length > 0" ><i class="fa fa-times text-danger"></i></button>
+        </div>
+        <div class="btn-group">
+            <select class="form-control multiselect" multiple="multiple" data-bind="selectedOptions: assessment, options: assessmentOptions, multiselect: multiSelectInitOptions" title="Vurderingsform"></select>
+            <button id="assessment-deselect" class="btn btn-default" data-bind="enable: assessment().length > 0"><i class="fa fa-times text-danger"></i></button>
+        </div>
+        <div class="btn-group">
+            <select class="form-control multiselect" multiple="multiple" data-bind="options: studyLevelOptionsProxy, selectedOptions: studyLevel, multiselect: multiSelectInitOptions" title="Nivå"></select>
+            <button id="studyLevel-deselect" class="btn btn-default" data-bind="enable: studyLevel().length > 0"><i class="fa fa-times text-danger"></i></button>
+        </div>
     </div>
 </div>
 
@@ -46,20 +64,23 @@
 <table id="main-table" class="table table-hover table-condensed">
     <thead>
         <tr class="table-header">
-            <th><span id="header-code" data-bind="click: onHeaderClick">Kode</span></th>
-            <th><span id="header-credit" data-bind="click: onHeaderClick">SP</span></th>
-            <th><span id="header-name" data-bind="click: onHeaderClick">Navn</span></th>
-            <th><span id="header-semester" data-bind="click: onHeaderClick">Semester</span></th>
-            <th><span id="header-language" data-bind="click: onHeaderClick">Språk</span></th>
-            <th><span id="header-mandatory" data-bind="click: onHeaderClick">Oblig. arbeid</span></th>
-            <th><span id="header-grading" data-bind="click: onHeaderClick">Vurderingsform</span></th>
-            <th><span id="header-level" data-bind="click: onHeaderClick">Nivå</span></th>
+            <th><span class="clickable-header" id="header-code" data-bind="click: onHeaderClick">Kode <i class="fa fa-sort"></i></span></th>
+            <th><span class="clickable-header" id="header-credit" data-bind="click: onHeaderClick">SP <i class="fa fa-sort"></i></span></th>
+            <th><span class="clickable-header" id="header-name" data-bind="click: onHeaderClick">Navn <i class="fa fa-sort"></i></span></th>
+            <th><span id="header-semester">Semester</span></th>
+            <th><span id="header-language">Språk</span></th>
+            <th><span id="header-mandatory">Oblig. arbeid</span></th>
+            <th><span id="header-grading">Vurderingsform</span></th>
+            <th><span id="header-level">Fagansvarlig</span></th>
+            <th><span id="header-level">Eksamensdato</span></th>
+            <th><span id="header-level">Nivå</span></th>
             <th><span id="header-moreinfo"></span></th>
             <th><span id="header-timetable"></span></th>
         </tr>
     </thead>
     <tbody>
         <!-- ko foreach: courses -->
+        <!-- ko if: $parent.valSemester($data) != "-" -->
         <tr id="row-{{ course.code }}">
             <td data-bind="text: code"></td>
             <td data-bind="text: credit"></td>
@@ -69,18 +90,21 @@
             <td data-bind="text: $parent.valMandatoryActivity($data, true), attr: {title: $parent.valMandatoryActivity($data, false)}"></td>
             <!-- ko if: typeof assessment != 'undefined' --><td data-bind="text: assessment[0].codeName"></td><!-- /ko -->
             <!-- ko if: typeof assessment == 'undefined' --><td>?</td><!-- /ko -->
+            <td data-bind="text: $parent.valLecturer($data)"></td>
+            <td data-bind="text: $parent.valExamDate($data)"></td>
             <td><span data-bind="html: $parent.valStudyLevelShortname($data), attr: {title: studyLevelName, class: 'circle level' + studyLevelCode}"></span></td>
             <td class="td-url"><a target="_blank" data-bind="attr: {href: 'http://www.ntnu.no/studier/emner/' + code}"><i class="fa fa-external-link"></i></a></td>
             <td class="td-url"><a target="_blank" data-bind="attr: {href: 'http://www.ntnu.no/studier/emner/' + code + '#tab=timeplan'}"><i class="fa fa-calendar"></i></a></td>
         </tr>
         <!-- /ko -->
+        <!-- /ko -->
         <!-- ko if: courses().length == 0 -->
         <tr id="no-results-row">
-            <td colspan=10>Det var dessverre ingen resultater.</td>
+            <td colspan=12>Det var dessverre ingen resultater.</td>
         </tr>
         <!-- /ko -->
         <tr id="seemore-row" data-bind="click: onMoreClick">
-            <td colspan=10><p id="seemore-text">Se flere emner</p></td>
+            <td colspan=12><p id="seemore-text">Se flere emner</p></td>
         </tr>
     </tbody>
 </table>

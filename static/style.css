@@ -13,8 +13,12 @@ div#toolbar {
     background-color: #eee;
 }
 
-.form-control {
+.form-control, .btn {
     border-radius: 2px;
+}
+
+button.multiselect {
+    border-radius: 2px !important;
 }
 
 a.navbar-brand {
@@ -37,6 +41,10 @@ a.navbar-brand strong {
 tr.table-header {
     /*background-color: #dfdfdf;*/
     background-color: #eee;
+}
+
+span.clickable-header {
+    cursor: pointer;
 }
 
 tr#seemore-row {
@@ -152,17 +160,16 @@ span.vertical-divider {
     margin: 0 10px 0 5px;
 }
 
-/* Flatten multiselect dropdowns */
-button.multiselect {
-    background-image: none !important;
-    border-radius: 2px !important;
+ul.multiselect-container div.input-group {
+    margin-top: 0px;
+    margin-bottom: 0px;
 }
 
-ul.multiselect-container {
-    padding: 5px 5px 5px 5px;
+ul.multiselect-container a {
+    padding-left: 10px;
 }
 
 ul.multiselect-container label {
-    padding-left: 5px !important;
+    /*padding-left: 5px !important; */
     width: 100%;
 }
