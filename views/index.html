@@ -10,6 +10,7 @@
     <script type="text/javascript" src="static/knockout-3.1.0.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="static/bootstrap-multiselect.js"></script>
+    <script type="text/javascript" src="static/subject_areas.js"></script>
     <script type="text/javascript" src="static/main.js"></script>
     <title>NTNU emnevelger</title>
 </head>
@@ -26,7 +27,7 @@
 <div class="container-custom">
     <div class="form-inline" id="toolbar">
         <input class="form-control" placeholder="Søk" data-bind="value: searchString"/>
-        <select class="multiselect form-control" multiple="multiple" data-bind="selectedOptions: field, options: fieldOptions, multiselect: multiSelectInitOptions" title="Fagområde"></select>
+        <select class="multiselect form-control" multiple="multiple" data-bind="selectedOptions: subjectArea, options: subjectAreaOptions, multiselect: multiSelectInitSearchOptions" title="Fagområde"></select>
         <span class="vertical-divider"></span>
         <select class="form-control multiselect" multiple="multiple" data-bind="selectedOptions: credit, options: creditOptions, multiselect: multiSelectInitOptions" title="Studiepoeng"></select>
         <select class="form-control" data-bind="value: semester, options: semesterOptions, optionsCaption: 'Semester'" title="Semester"></select>

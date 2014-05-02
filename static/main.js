@@ -17,6 +17,15 @@ function ViewModel() {
         }
     }
 
+    self.multiSelectInitSearchOptions = {
+        enableFiltering: true,
+        maxHeight: 300,
+        enableCaseInsensitiveFiltering: true,
+        buttonText: function(op, select) {
+            return (op.context.title + ' <b class="caret"></b>');
+        }
+    }
+
     // Course info pane
     self.curentInfoPane = ko.observable("");
     self.onHeaderClick = function(course, event) {
@@ -136,7 +145,7 @@ function ViewModel() {
         });
     });
     self.semesterOptions = ko.observableArray(["Høst", "Vår"]);
-    self.fieldOptions = ko.observableArray(["Matematikk", "Fysikk"]);
+    self.subjectAreaOptions = ko.observableArray(subject_areas);
     self.mandatoryActivitiesOptions = ko.observableArray(["Ja", "Kun tellende", "Nei"]);
     self.assessmentOptions = ko.observableArray(["Skriftlig eksamen", "Muntlig eksamen", "Arbeider", "Annet"]);
 
@@ -178,8 +187,8 @@ function ViewModel() {
     });
     self.semester = ko.observable();
     self.semester.subscribe(self.resetNumberOfResults);
-    self.field = ko.observableArray();
-    self.field.subscribe(self.resetNumberOfResults);
+    self.subjectArea = ko.observableArray();
+    self.subjectArea.subscribe(self.resetNumberOfResults);
     self.mandatoryActivities = ko.observableArray();
     self.mandatoryActivities.subscribe(self.resetNumberOfResults);
     self.assessment = ko.observableArray();
@@ -215,8 +224,8 @@ function ViewModel() {
                 value: self.semester(),
                 type: "string"
             },
-            field: {
-                value: self.field(),
+            subjectArea: {
+                value: self.subjectArea(),
                 type: "string"
             },
             mandatoryActivities: {

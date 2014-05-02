@@ -1,3 +1,4 @@
+var fs = require('fs');
 var express = require('express');
 var r = require('rethinkdb');
 var swig = require('swig');
@@ -17,6 +18,25 @@ function stringToType(string, type) {
     } else {
         throw new Error("Incorrect type specified");
     }
+}
+
+function saveListOfSubjectAreas(connection) {
+    var reql = r.db('ntnu_courses').table('courses').pluck({subjectArea: {name: true}})("subjectArea").reduce(function(l, r) { return l.setUnion(r); })("name");
+    reql.run(connection, {
+        durability: "soft",
+        useOutdated: true
+    }, function(err, c) {
+        if (err) console.log(err);
+        c.toArray(function(err, result) {
+            fs.writeFile("subject_areas", result, function(err) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log("Saved.");
+                }
+            })
+        });
+    });
 }
 
 function main() {
@@ -92,14 +112,15 @@ function main() {
                 reql = reql.filter(function(doc) {
                     return r.expr(value).contains(doc("studyLevelCode"));
                 });
-                /*} else if (matching == "inexact") {
-                    reql = reql.filter(function(doc) {
-                        return doc(key).match("(?i)" + value);
-                    });
-                }*/
             } else if (key == "credit") {
                 reql = reql.filter(function(doc) {
                     return r.expr(value).contains(doc("credit"));
+                });
+            } else if (key == "subjectArea") {
+                reql = reql.filter(function(doc) {
+                    return doc("subjectArea").contains(function(k) {
+                        return r.expr(value).contains(k("name"));
+                    });
                 });
             } else {
                 console.log("No matching specified for key " + type + "! Skipping...");
