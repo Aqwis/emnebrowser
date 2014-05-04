@@ -187,10 +187,11 @@ span#footer-right {
 }
 
 span#footer-right i {
+    vertical-align: middle;
     padding-left: 10px;
 }
 
-span#footer-right a:link {
+span#footer-right a.imglink:link {
     color: inherit;
 }
 
