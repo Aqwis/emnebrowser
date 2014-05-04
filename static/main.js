@@ -1,3 +1,14 @@
+var arrayUnique = function(a) {
+    return a.reduce(function(p, c) {
+        if (p.indexOf(c) < 0) p.push(c);
+        return p;
+    }, []);
+};
+
+function isObservableArray(obj) {
+    return ko.isObservable(obj) && !(obj.destroyAll === undefined);
+}
+
 function ViewModel() {
     var self = this;
 
@@ -38,6 +49,15 @@ function ViewModel() {
        vm.numberOfResults(vm.numberOfResults() + 50);
     }
 
+    self.uncheckEverything = function(selectedOptionsContainer) {
+        console.log("Called")
+        if (isObservableArray(self[selectedOptionsContainer])) {
+            self[selectedOptionsContainer].removeAll();
+        } else {
+            self[selectedOptionsContainer]('');
+        }
+    }
+
     // Table field values
     self.valLanguage = function(course) {
         if (course.taughtInEnglish) {
@@ -62,6 +82,7 @@ function ViewModel() {
                 names.push(person.person.displayName);
             }
         });
+        names = arrayUnique(names);
         if (coordinator != "") {
             if (names.length > 1) {
                 return coordinator + " m.fl.";
@@ -238,7 +259,7 @@ function ViewModel() {
             return []
         }
     });
-    self.semester = ko.observable();
+    self.semester = ko.observableArray();
     self.semester.subscribe(self.resetNumberOfResults);
     self.subjectArea = ko.observableArray();
     self.subjectArea.subscribe(self.resetNumberOfResults);

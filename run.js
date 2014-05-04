@@ -98,14 +98,21 @@ function main() {
                 });
                 return;
             } else if (key == "semester") {
-                if (value == "Høst") {
+                /*if (value == "Høst") {
                     var engVal = "Autumn"
                 } else if (value == "Vår") {
                     var engVal = "Spring";
-                }
+                }*/
+                var engValues = value.map(function(val) {
+                    if (val == "Høst") {
+                        return "Autumn";
+                    } else if (val == "Vår") {
+                        return "Spring"
+                    }
+                })
                 reql = reql.filter(function(doc) {
                     return doc("educationTerm").contains(function(k) {
-                        return k("startTerm").eq(engVal);
+                        return r.expr(engValues).contains(k("startTerm"));
                     });
                 });
             } else if (key == "studyLevelCode") {
