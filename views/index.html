@@ -118,8 +118,11 @@
             <td colspan=13><p><i class="fa fa-spinner fa-3x rotate"></i></p></td>
         </tr>
         <!-- /ko -->
-        <tr id="seemore-row" data-bind="click: onMoreClick, visible: courses().length > 0 && loaded">
+        <tr id="seemore-row" data-bind="click: onMoreClick, visible: courses().length % 50 == 0 && courses().length > 0 && loaded() && !clickedMore()">
             <td colspan=13><p id="seemore-text">Se flere emner</p></td>
+        </tr>
+        <tr id="seemore-row" class="inactive" data-bind="visible: courses().length % 50 == 0 && courses().length > 0 && loaded() && clickedMore()">
+            <td colspan=13><p id="seemore-text"><i class="fa fa-spinner rotate"></i></p></td>
         </tr>
     </tbody>
 </table>

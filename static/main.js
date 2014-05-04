@@ -25,15 +25,19 @@ function ViewModel() {
     var self = this;
 
     self.loaded = ko.observable(false); // False until we have loaded courses for the first time.
+    self.clickedMore = ko.observable(false); // When the user clicks more, we do not replace view with spinner.
 
     self.courses = ko.observableArray([]);
     self.ongoingRequests = [];
     self.getCourses = ko.computed(function() {
-        self.loaded(false);
-        //console.log("Fetching courses...");
+        if (!self.clickedMore.peek()) {
+            self.loaded(false);
+        }
+        console.log("Fetching courses...");
         var req = $.getJSON("/api/?" + self.queryString(), function(data) {
             self.courses(data);
             self.loaded(true);
+            self.clickedMore(false);
         });
         self.ongoingRequests.push(req);
     }, this, { deferEvaluation: true });
@@ -61,7 +65,7 @@ function ViewModel() {
     }
 
     self.onMoreClick = function() {
-       console.log("clicked!");
+       self.clickedMore(true);
        vm.numberOfResults(vm.numberOfResults() + 50);
     }
 

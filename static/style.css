@@ -70,6 +70,10 @@ tr#seemore-row {
     cursor: pointer;
 }
 
+tr#seemore-row.inactive {
+    cursor: default;
+}
+
 p#seemore-text {
     font-size: 1.2em;
     text-align: center;
