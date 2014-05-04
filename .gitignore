@@ -1,5 +1,6 @@
 *.swp
 *.swo
+*.tmp
 courses
 node_modules
 rethinkdb_data

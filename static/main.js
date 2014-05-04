@@ -70,7 +70,6 @@ function ViewModel() {
     }
 
     self.uncheckEverything = function(selectedOptionsContainer) {
-        console.log("Called")
         if (isObservableArray(self[selectedOptionsContainer])) {
             self[selectedOptionsContainer].removeAll();
         } else {
@@ -242,7 +241,7 @@ function ViewModel() {
     // Filter state
     self.orderBy = ko.observable("name");
     self.numberOfResults = ko.observable(50);
-    self.searchString = ko.observable("");
+    self.searchString = ko.observable("").extend({ rateLimit: {timeout: 750, method: "notifyWhenChangesStop"} });
     self.searchString.subscribe(self.resetNumberOfResults);
 
     self.credit = ko.observableArray();

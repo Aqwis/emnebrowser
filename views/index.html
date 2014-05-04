@@ -28,7 +28,7 @@
 
 <div class="container-custom">
     <div class="form-inline" id="toolbar">
-        <input class="form-control" placeholder="Søk" data-bind="value: searchString"/>
+        <input class="form-control" placeholder="Søk" data-bind="value: searchString, valueUpdate: 'afterkeydown'"/>
         <div class="btn-group">
             <select class="multiselect form-control" multiple="multiple" data-bind="selectedOptions: subjectArea, options: subjectAreaOptions, multiselect: multiSelectInitSearchOptions" title="Fagområde"></select>
             <button id="subjectArea-deselect" class="btn btn-default" data-bind="enable: subjectArea().length > 0, click: function() {uncheckEverything('subjectArea')}"><i class="fa fa-times text-danger"></i></button>
