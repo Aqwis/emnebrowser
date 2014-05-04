@@ -101,7 +101,7 @@ function mungeLecturer(course) {
     }
 }
 
-function mungeExamDate(course) {
+function mungeExamDate(course, semester) {
     var assessment = course.assessment;
     if (typeof(assessment) == "undefined") {
         return "-";
@@ -115,7 +115,29 @@ function mungeExamDate(course) {
     });
 
     if (dates.length > 1) {
-        return "Flere";
+        if (semester.autumn && !semester.spring) {
+            return dates.filter(function(date) {
+                var month_str = date.slice(5,7);
+                var month = Number(month_str);
+                if (month > 7) {
+                    return true;
+                } else {
+                    return false;
+                }
+            })[0];
+        } else if (semester.spring && !semester.autumn) {
+            return dates.filter(function(date) {
+                var month_str = date.slice(5,7);
+                var month = Number(month_str);
+                if (month <= 7) {
+                    return true;
+                } else {
+                    return false;
+                }
+            })[0];
+        } else {
+            return "Flere";
+        }
     } else if (dates.length == 1) {
         return dates[0];
     } else {
@@ -235,9 +257,17 @@ function mungeAssessment(course) {
             /*assessment.hasOther = true; // annet, f.eks. praksis*/
             shortname = "Annet";
         }
+
+        if (typeof(a.examinationSupport) != "undefined") {
+            var examinationSupport = a.examinationSupport[0].code
+        } else {
+            var examinationSupport = "";
+        }
+
         assessment.push({
             long: a.assessmentFormDescription,
             short: shortname,
+            support: examinationSupport
         });
     });
 
@@ -263,9 +293,9 @@ function mungeCourse(course) {
     munged_course = {}
     munged_course.language = mungeLanguage(course);
     munged_course.lecturer = mungeLecturer(course);
-    munged_course.examDate = mungeExamDate(course);
     munged_course.mandatoryActivity = mungeMandatoryActivity(course);
     munged_course.semester = mungeSemester(course);
+    munged_course.examDate = mungeExamDate(course, munged_course.semester);
     munged_course.assessment = mungeAssessment(course);
     munged_course.subjectArea = mungeSubjectArea(course);
 

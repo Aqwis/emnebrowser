@@ -73,8 +73,8 @@ function main() {
             var type = query[key].type;
             var matching = query[key].matching;
 
-            // Convert value or value array elements to
-            // given type
+            /* Convert value or value array elements to
+            given type */
             var value = query[key].value;
             if (!value) {
                 return;
@@ -86,7 +86,8 @@ function main() {
                 value = stringToType(value, type);
             }
 
-            // Special keys
+            /* We go through all the key and filter
+            the results for each of them. */
             if (key == "orderBy") {
                 orderBy = value;
             } else if (key == "results") {
@@ -112,9 +113,11 @@ function main() {
                     }
                 });
                 if (autumn && !spring) {
-                    reql = reql.filter(r.row("semester")("autumn"));
+                    //reql = reql.filter(r.row("semester")("autumn"));
+                    reql = reql.getAll(true, {index: 'autumn'});
                 } else if (!autumn && spring) {
-                    reql = reql.filter(r.row("semester")("spring"));
+                    //reql = reql.filter(r.row("semester")("spring"));
+                    reql = reql.getAll(true, {index: 'spring'});
                 }
             } else if (key == "studyLevelCode") {
                 reql = reql.filter(function(doc) {
@@ -141,10 +144,6 @@ function main() {
             } else {
                 console.log("No matching specified for key " + type + "! Skipping...");
             }
-
-            // Normal case -- for when the key is a field
-            // on the course objects
-
         });
 
         if (orderBy != null) {
@@ -155,20 +154,8 @@ function main() {
         reql.run(connection, {durability: "soft", useOutdated: true}, function(err, c) {
             if (err) console.log(err);
             c.toArray(function(err, result) {
-                /*// Post-select filtering
-                var filtered_result = [];
-                postSelectFilters.forEach(function(filter) {
-                    if (filter.key == "mandatoryActivities") {
-                        
-                    }
-                });*/
-
                 // Finally, send the courses to the client
-                if (postSelectFilters.length > 0) {
-                    page.send(filtered_result);
-                } else {
-                    page.send(result);
-                }
+                page.send(result);
             });
         });
     });
