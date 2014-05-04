@@ -135,11 +135,15 @@ function main() {
                 reql = reql.filter(function(doc) {
                     return r.expr(value).contains(doc("mandatoryActivity")("text"));
                 })
-            } else if (key = "assessment") {
+            } else if (key == "assessment") {
                 reql = reql.filter(function(doc) {
                     return doc("assessment").contains(function(k) {
                         return r.expr(value).contains(k("short"));
                     });
+                });
+            } else if (key == "examSupportCode") {
+                reql = reql.filter(function(doc) {
+                    return r.expr(value).contains(doc("canonicalExaminationSupport"));
                 });
             } else {
                 console.log("No matching specified for key " + type + "! Skipping...");

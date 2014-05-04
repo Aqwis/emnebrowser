@@ -24,12 +24,16 @@ function sortByOrder(arr, order) {
 function ViewModel() {
     var self = this;
 
+    self.loaded = ko.observable(false); // False until we have loaded courses for the first time.
+
     self.courses = ko.observableArray([]);
     self.ongoingRequests = [];
     self.getCourses = ko.computed(function() {
-        console.log("Fetching courses...");
+        self.loaded(false);
+        //console.log("Fetching courses...");
         var req = $.getJSON("/api/?" + self.queryString(), function(data) {
             self.courses(data);
+            self.loaded(true);
         });
         self.ongoingRequests.push(req);
     }, this, { deferEvaluation: true });
@@ -129,6 +133,50 @@ function ViewModel() {
         }
     }
 
+    self.valExamSupport = function(course) {
+        var supportOrder = ["A", "B", "C", "D"].reverse();
+        var supportArray = course.assessment.map(function(a) {
+            return a.support;
+        }).filter(function(s) {
+            if (s != "" && s != "-") {
+                return true;
+            }
+        });
+        if (supportArray.length > 0) {
+            return sortByOrder(supportArray, supportOrder)[0];
+        } else {
+            var written_exams = course.assessment.filter(function(a) {
+                if (a.short == "Skriftlig") {
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+            var oral_exams = course.assessment.filter(function(a) {
+                if (a.short == "Muntlig") {
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+            if (oral_exams.length > 0 && written_exams.length == 0) {
+                return "D";
+            } else {
+                return "-";
+            }
+        }
+    }
+
+    self.valExamSupportDescription = function(course) {
+        var code = self.valExamSupport(course);
+        var options = self.examSupportOptions.peek();
+        if (code != "-") {
+            return options.filter(function(opt) {
+                return (opt.code == code);
+            })[0].text;
+        }
+    }
+
     self.valStudyLevelShortname = function(course) {
         var levelCode = course.studyLevelCode;
         var studyLevelObj = self.studyLevelOptions().filter(function(obj) {
@@ -139,9 +187,16 @@ function ViewModel() {
 
     // Filter variables 
     self.creditOptions = ko.observableArray([0.0, 7.5, 10, 15, 22.5, 30, 45, 52.5, 60]);
+    self.examSupportOptions = ko.observableArray([
+        {code: "A", text: "A: Alle trykte og håndskrevne hjelpemidler tillatt. Alle kalkulatorer tillatt."},
+        {code: "B", text: "B: Alle trykte og håndskrevne hjelpemidler tillatt. Bestemt, enkel kalkulator tillatt."},
+        {code: "C", text: "C: Spesifiserte trykte og håndskrevne hjelpemidler tillatt. Bestemt, enkel kalkulator tillatt."},
+        {code: "D", text: "D: Ingen trykte eller håndskrevne hjelpemidler tillatt. Bestemt, enkel kalkulator tillatt."}
+        ]);
     self.studyLevelOptions = ko.observableArray([
             {code: "50", name: "Norsk for utenlandske studenter", shortname: "NFU"},
             {code: "70", name: "Examen philosophicum", shortname: "EXP"},
+            {code: "71", name: "Examen facultatum", shortname: "EXF"},
             {code: "90", name: "Lavere grad, redskapskurs", shortname: "LAV"},
             {code: "100", name: "Grunnleggende emner, nivå I", shortname: "&nbsp;1&nbsp;"},
             {code: "200", name: "Videregående emner, nivå II", shortname: "&nbsp;2&nbsp;"},
@@ -154,6 +209,12 @@ function ViewModel() {
     /* bootstrap-multiselect DOES NOT work properly with observableArrays containing objects.
     See this bug: https://github.com/davidstutz/bootstrap-multiselect/issues/149
     Because of this, a proxy and a reverse proxy are needed to make things work. */
+    self.examSupportOptionsProxy = ko.computed(function() {
+        var options = self.examSupportOptions.peek();
+        return options.map(function(opt) {
+            return opt.text;
+        });
+    });
     self.studyLevelOptionsProxy = ko.computed(function() {
         var options = self.studyLevelOptions.peek();
         return options.map(function(opt) {
@@ -170,7 +231,6 @@ function ViewModel() {
         // Stop all previous requests
         for (var i = 0; i < self.ongoingRequests.length; i++) {
             self.ongoingRequests[i].abort();
-            console.log("Stopped request!");
         }
         self.numberOfResults(50);
     }
@@ -193,6 +253,24 @@ function ViewModel() {
             var selectedCodes = [];
             options.forEach(function(opt) {
                 if (selectedNames.indexOf(opt.name) > -1) {
+                    selectedCodes.push(opt.code);
+                }
+            });
+            return selectedCodes;
+        } else {
+            return []
+        }
+    });
+    self.examSupport = ko.observableArray();
+    self.examSupport.subscribe(self.resetNumberOfResults);
+    self.examSupportCode = ko.computed(function() {
+        // Reverse proxy for studyLevelOptionsProxy
+        if (self.examSupport()) {
+            var options = self.examSupportOptions.peek();
+            var selectedNames = self.examSupport();
+            var selectedCodes = [];
+            options.forEach(function(opt) {
+                if (selectedNames.indexOf(opt.text) > -1) {
                     selectedCodes.push(opt.code);
                 }
             });
@@ -251,13 +329,16 @@ function ViewModel() {
             assessment: {
                 value: self.assessment(),
                 type: "string"
+            },
+            examSupportCode: {
+                value: self.examSupportCode(),
+                type: "string"
             }
         });
     }, this);
 }
 
 $(function() {
-    /* $('.multiselect').multiselect(); */
     vm = new ViewModel();
     ko.applyBindings(vm);
     vm.getCourses();

@@ -16,7 +16,15 @@ function arrayUnique(a) {
         if (p.indexOf(c) < 0) p.push(c);
         return p;
     }, []);
-};
+}
+
+function sortByOrder(arr, order) {
+    return arr.sort(function(a,b) {
+        var i = order.indexOf(a);
+        var j = order.indexOf(b);
+        return (i < j) ? -1 : (i > j) ? 1 : 0;
+    });
+}
 
 function handleError(err, msg) {
     if (err) {
@@ -274,6 +282,43 @@ function mungeAssessment(course) {
     return assessment;
 }
 
+/* Blatantly copied from client-side JavaScript,
+fix someday! */
+function mungeCanonicalExaminationSupport(course) {
+    var assessment = mungeAssessment(course);
+    var supportOrder = ["A", "B", "C", "D"].reverse();
+    var supportArray = assessment.map(function(a) {
+        return a.support;
+    }).filter(function(s) {
+        if (s != "") {
+            return true;
+        }
+    });
+    if (supportArray.length > 0) {
+        return sortByOrder(supportArray, supportOrder)[0];
+    } else {
+        var written_exams = assessment.filter(function(a) {
+            if (a.short == "Skriftlig") {
+                return true;
+            } else {
+                return false;
+            }
+        });
+        var oral_exams = assessment.filter(function(a) {
+            if (a.short == "Muntlig") {
+                return true;
+            } else {
+                return false;
+            }
+        });
+        if (oral_exams.length > 0 && written_exams.length == 0) {
+            return "D";
+        } else {
+            return "-";
+        }
+    }
+}
+
 function mungeCourse(course) {
     // Calculate aggregate course properties to avoid
     // massive filtering complexity and workload
@@ -298,6 +343,7 @@ function mungeCourse(course) {
     munged_course.examDate = mungeExamDate(course, munged_course.semester);
     munged_course.assessment = mungeAssessment(course);
     munged_course.subjectArea = mungeSubjectArea(course);
+    munged_course.canonicalExaminationSupport = mungeCanonicalExaminationSupport(course);
 
     for (var i = 0; i < keys_to_keep.length; i++) {
         munged_course[keys_to_keep[i]] = course[keys_to_keep[i]];
