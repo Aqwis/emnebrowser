@@ -113,12 +113,16 @@ function main() {
                     }
                 });
                 if (autumn && !spring) {
-                    //reql = reql.filter(r.row("semester")("autumn"));
-                    reql = reql.getAll(true, {index: 'autumn'});
+                    reql = reql.filter(r.row("semester")("autumn"));
+                    //reql = reql.getAll(true, {index: 'autumn'}); // FIXME: For whatever reason, this throws an exception when combined with a credit filter
                 } else if (!autumn && spring) {
-                    //reql = reql.filter(r.row("semester")("spring"));
-                    reql = reql.getAll(true, {index: 'spring'});
+                    reql = reql.filter(r.row("semester")("spring"));
+                    //reql = reql.getAll(true, {index: 'spring'}); // FIXME: For whatever reason, this throws an exception when combined with a credit filter
                 }
+            } else if (key == "subjectArea") {
+                reql = reql.filter(function(doc) {
+                    return r.not(r.expr(value).setIntersection(doc("subjectArea")).isEmpty());
+                });
             } else if (key == "studyLevelCode") {
                 reql = reql.filter(function(doc) {
                     return r.expr(value).contains(doc("studyLevelCode"));
@@ -126,10 +130,6 @@ function main() {
             } else if (key == "credit") {
                 reql = reql.filter(function(doc) {
                     return r.expr(value).contains(doc("credit"));
-                });
-            } else if (key == "subjectArea") {
-                reql = reql.filter(function(doc) {
-                    return r.not(r.expr(value).setIntersection(doc("subjectArea")).isEmpty());
                 });
             } else if (key == "mandatoryActivities") {
                 reql = reql.filter(function(doc) {
@@ -157,10 +157,12 @@ function main() {
         reql = reql.limit(results);
         reql.run(connection, {durability: "soft", useOutdated: true}, function(err, c) {
             if (err) console.log(err);
-            c.toArray(function(err, result) {
-                // Finally, send the courses to the client
-                page.send(result);
-            });
+            if (typeof(c) != "undefined") {
+                c.toArray(function(err, result) {
+                    // Finally, send the courses to the client
+                    page.send(result);
+                });
+            }
         });
     });
 
