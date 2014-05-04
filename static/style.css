@@ -85,10 +85,6 @@ td:last-child, th:last-child {
     padding-right: 10px !important;
 }
 
-tbody {
-    min-height: 200px;
-}
-
 td.td-url {
     text-align: center;
 }

@@ -127,9 +127,6 @@ function main() {
             } else if (key == "subjectArea") {
                 reql = reql.filter(function(doc) {
                     return r.not(r.expr(value).setIntersection(doc("subjectArea")).isEmpty());
-                    /*return doc("subjectArea").contains(function(k) {
-                        return r.expr(value).contains(k("name"));
-                    });*/
                 });
             } else if (key == "mandatoryActivities") {
                 reql = reql.filter(function(doc) {
