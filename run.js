@@ -65,6 +65,10 @@ function main() {
         // filter for each entry
         var reql = r.db('ntnu_courses').table('courses');
 
+        // In some cases, the required filtering is too complicated
+        // to be done in-database.
+        var postSelectFilters = [];
+
         Object.keys(query).forEach(function(key) {
             var type = query[key].type;
             var matching = query[key].matching;
@@ -98,23 +102,20 @@ function main() {
                 });
                 return;
             } else if (key == "semester") {
-                /*if (value == "Høst") {
-                    var engVal = "Autumn"
-                } else if (value == "Vår") {
-                    var engVal = "Spring";
-                }*/
+                var autumn = false;
+                var spring = false
                 var engValues = value.map(function(val) {
                     if (val == "Høst") {
-                        return "Autumn";
+                        autumn = true;
                     } else if (val == "Vår") {
-                        return "Spring"
+                        spring = true;
                     }
-                })
-                reql = reql.filter(function(doc) {
-                    return doc("educationTerm").contains(function(k) {
-                        return r.expr(engValues).contains(k("startTerm"));
-                    });
                 });
+                if (autumn && !spring) {
+                    reql = reql.filter(r.row("semester")("autumn"));
+                } else if (!autumn && spring) {
+                    reql = reql.filter(r.row("semester")("spring"));
+                }
             } else if (key == "studyLevelCode") {
                 reql = reql.filter(function(doc) {
                     return r.expr(value).contains(doc("studyLevelCode"));
@@ -125,8 +126,19 @@ function main() {
                 });
             } else if (key == "subjectArea") {
                 reql = reql.filter(function(doc) {
-                    return doc("subjectArea").contains(function(k) {
+                    return r.not(r.expr(value).setIntersection(doc("subjectArea")).isEmpty());
+                    /*return doc("subjectArea").contains(function(k) {
                         return r.expr(value).contains(k("name"));
+                    });*/
+                });
+            } else if (key == "mandatoryActivities") {
+                reql = reql.filter(function(doc) {
+                    return r.expr(value).contains(doc("mandatoryActivity")("text"));
+                })
+            } else if (key = "assessment") {
+                reql = reql.filter(function(doc) {
+                    return doc("assessment").contains(function(k) {
+                        return r.expr(value).contains(k("short"));
                     });
                 });
             } else {
@@ -146,7 +158,20 @@ function main() {
         reql.run(connection, {durability: "soft", useOutdated: true}, function(err, c) {
             if (err) console.log(err);
             c.toArray(function(err, result) {
-                page.send(result);
+                /*// Post-select filtering
+                var filtered_result = [];
+                postSelectFilters.forEach(function(filter) {
+                    if (filter.key == "mandatoryActivities") {
+                        
+                    }
+                });*/
+
+                // Finally, send the courses to the client
+                if (postSelectFilters.length > 0) {
+                    page.send(filtered_result);
+                } else {
+                    page.send(result);
+                }
             });
         });
     });

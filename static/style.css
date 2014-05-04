@@ -1,6 +1,19 @@
 @import url(http://fonts.googleapis.com/css?family=Bitter:400,700,400italic);
 @import url(http://fonts.googleapis.com/css?family=Cousine);
 
+html, body {
+    height: 100%;
+}
+
+div#top-wrapper {
+    min-height: 100%;
+}
+
+div#table-wrapper {
+    overflow: auto;
+    padding-bottom: 50px;
+}
+
 div.header {
     background-color: rgb(0, 50, 88);
 }
@@ -124,6 +137,11 @@ td > span.level300 {
     padding-right: 0px;
 }
 
+div#footer-wrapper {
+    margin-top: -50px;
+    clear: both;
+}
+
 div#footer {
     background-color: rgb(0, 50, 88);
     padding: 15px 25px 5px 30px;
@@ -145,10 +163,6 @@ span#footer-right i {
 
 span#footer-right a:link {
     color: inherit;
-}
-
-div#footer-wrapper {
-    bottom: 0;
 }
 
 div#loading-pane {

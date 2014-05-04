@@ -1,12 +1,24 @@
-var arrayUnique = function(a) {
+function isObservableArray(obj) {
+    return ko.isObservable(obj) && !(obj.destroyAll === undefined);
+}
+
+function arrayUnique(a) {
     return a.reduce(function(p, c) {
         if (p.indexOf(c) < 0) p.push(c);
         return p;
     }, []);
 };
 
-function isObservableArray(obj) {
-    return ko.isObservable(obj) && !(obj.destroyAll === undefined);
+function firstLetterCaps(str) {
+    return (str.substr(0,1).toUpperCase() + str.substr(1).toLowerCase());
+}
+
+function sortByOrder(arr, order) {
+    return arr.sort(function(a,b) {
+        var i = order.indexOf(a);
+        var j = order.indexOf(b);
+        return (i < j) ? -1 : (i > j) ? 1 : 0;
+    });
 }
 
 function ViewModel() {
@@ -60,130 +72,60 @@ function ViewModel() {
 
     // Table field values
     self.valLanguage = function(course) {
-        if (course.taughtInEnglish) {
-            return "Engelsk";
-        } else {
-            return "Norsk";
-        }
+        return course.language;
     }
 
     self.valLecturer = function(course) {
-        var people = course.educationalRole;
-        if (typeof(people) == "undefined") {
-            return "?";
-        }
-        var coordinator = "";
-        var names = [];
-        people.forEach(function(person) {
-            if (typeof(person.person) != "undefined") {
-                if (person.code == "Coordinator") {
-                    coordinator = person.person.displayName;
-                }
-                names.push(person.person.displayName);
-            }
-        });
-        names = arrayUnique(names);
-        if (coordinator != "") {
-            if (names.length > 1) {
-                return coordinator + " m.fl.";
-            } else {
-                return coordinator;
-            }
-        } else if (names.length > 0) {
-            if (names.length > 1) {
-                return names[0] + " m.fl.";
-            } else {
-                return names[0];
-            }
-        } else {
-            return "?";
-        }
+        return course.lecturer;
     }
 
     self.valExamDate = function(course) {
-        var assessment = course.assessment;
-        if (typeof(assessment) == "undefined") {
-            return "-";
-        }
-        var dates = [];
-        assessment.forEach(function(a) {
-            if (typeof(a.date) != "undefined") {
-                dates.push(a.date);
-            }
-        });
-        if (dates.length > 1) {
-            return "Flere";
-        } else if (dates.length == 1) {
-            return dates[0];
+        if (course.examDate != "") {
+            return course.examDate;
         } else {
-            return "-";
+            return "-"
         }
     }
 
     self.valSemester = function(course) {
-        var taughtInAutumn = false;
-        var taughtInSpring = false;
-
-        if (typeof(course.educationTerm) != "undefined") {
-            course.educationTerm.forEach(function(val) {
-                if (val.startTerm == "Autumn") {
-                    taughtInAutumn = true;
-                } else if (val.startTerm == "Spring") {
-                    taughtInSpring = true;
-                }
-            });
-    
-            if (taughtInAutumn && taughtInSpring) {
-                return "Begge";
-            } else if (taughtInAutumn) {
-                return "Høst";
-            } else if (taughtInSpring) {
-                return "Vår";
-            }
+        if (course.semester.autumn && course.semester.spring) {
+            return "Begge";
+        } else if (course.semester.autumn) {
+            return "Høst";
+        } else if (course.semester.spring) {
+            return "Vår";
         } else {
-            return "-";
+            return "";
         }
     }
 
     self.valMandatoryActivity = function(course, truncate) {
-        var mandatoryActivities = [];
-        var mandatoryActivityText = "";
-        var hasGradedProject = false;
-        // Check if the grade is based on non-exam work
-        if (typeof course.assessment != "undefined") {
-            if (course.assessment[0].code != "S" && course.assessment[0].code != "M") {
-                hasGradedProject = true;
-            }
-        }
-        if (typeof course.mandatoryActivity != "undefined") {
-            for (var i = 0; i < course.mandatoryActivity.length; i++) {
-                mandatoryActivities.push(course.mandatoryActivity[i].name);
-            }
-            mandatoryActivities.sort()
-        }
-        if (mandatoryActivities.length === 0) {
-            if (hasGradedProject) {
-                mandatoryActivityText = "Kun tellende";
-            } else {
-                mandatoryActivityText = "";
-            }
-        } else {
-            mandatoryActivityText = mandatoryActivities.join(", ");
-        }
         if (truncate) {
-            if (mandatoryActivityText == "Kun tellende") {
-                return "Kun tellende";
-            } else if (mandatoryActivityText == "") {
-                return "Nei";
-            } else {
-                return "Ja";
-            }
+            return course.mandatoryActivity.text;
         } else {
-            if (mandatoryActivityText == "Kun tellende") {
-                return "";
-            } else {
-                return mandatoryActivityText;
-            }
+            return course.mandatoryActivity.activities;
+        }
+    }
+
+    self.valAssessment = function(course, truncate) {
+        var assessmentOrder = ["Avhandling", "Skriftlig", "Muntlig", "Hjemmeeks.", "Arbeider", "Semesterprøve", "Annet"];
+
+        /* 1) Get short/long names,
+        /* 2) Sort in the above order,
+        /* 3) Remove duplicates,
+        /* 4) Capitalise only the first letter. */
+        if (truncate) {
+            return firstLetterCaps(
+                arrayUnique(
+                    sortByOrder(course.assessment.map(function(el) { return el.short; }), assessmentOrder)
+                ).join("/")
+            );
+        } else {
+            return firstLetterCaps(
+                arrayUnique(
+                    sortByOrder(course.assessment.map(function(el) { return el.long; }), assessmentOrder)
+                ).join(", ")
+            );
         }
     }
 
@@ -221,7 +163,7 @@ function ViewModel() {
     self.semesterOptions = ko.observableArray(["Høst", "Vår"]);
     self.subjectAreaOptions = ko.observableArray(subject_areas);
     self.mandatoryActivitiesOptions = ko.observableArray(["Ja", "Kun tellende", "Nei"]);
-    self.assessmentOptions = ko.observableArray(["Skriftlig eksamen", "Muntlig eksamen", "Arbeider", "Annet"]);
+    self.assessmentOptions = ko.observableArray(["Skriftlig", "Muntlig", "Hjemmeeks.", "Semesterprøve", "Arbeider", "Avhandling", "Annet"]);
 
     // Reset numberOfResults each time the filter is changed
     self.resetNumberOfResults = function() {
