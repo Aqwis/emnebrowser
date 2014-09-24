@@ -2,6 +2,7 @@ var fs = require('fs');
 var express = require('express');
 var r = require('rethinkdb');
 var swig = require('swig');
+var request = require('request');
 var app = express();
 
 function stringToType(string, type) {
@@ -56,6 +57,56 @@ function main() {
     app.use('/static', express.static(__dirname + '/static'));
 
     // Routing
+    app.delete('/1024/:username/:course', function(req, page) {
+        var username = req.params.username;
+        var course = req.params.course;
+
+        request.post("http://ntnu.1024.no/2014/var/" + username + "/change/", {
+            course_remove: course,
+            submit_remove: ""
+        }, function(err, response, body) {
+            if (error || response.statusCode != 302) {
+                page.status(500);
+            } else {
+                page.status(200);
+            }
+            page.send({});
+        });
+    });
+
+    app.put('/1024/:username/:course', function(req, page) {
+        var username = req.params.username;
+        var course = req.params.course;
+
+        request.post("http://ntnu.1024.no/" + username + "/change/", {
+            course_add: course,
+            submit_add: ""
+        }, function(err, response, body) {
+            if (error || response.statusCode != 302) {
+                page.status(500);
+            } else {
+                page.status(200);
+            }
+            page.send({});
+        });
+    });
+
+    app.get('/1024/:username', function(req, page) {
+        var username = req.params.username;
+
+        request.get("http://ntnu.1024.no/" + username + "/change/", {
+            course_remove: course,
+            submit_remove: ""
+        }, function(err, response, body) {
+            if (error || response.statusCode != 302) {
+                page.status(500);
+            } else {
+                page.status(200);
+            }
+            page.send({});
+        });
+    });
+
     app.get('/api/', function(req, page) {
         var query = req.query;
         var orderBy = null;

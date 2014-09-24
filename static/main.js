@@ -189,7 +189,7 @@ function ViewModel() {
     }
 
     // Filter variables 
-    self.creditOptions = ko.observableArray([0.0, 7.5, 10, 15, 22.5, 30, 45, 52.5, 60]);
+    self.creditOptions = ko.observableArray([0.0, 5, 7.5, 10, 15, 22.5, 30, 45, 52.5, 60]);
     self.examSupportOptions = ko.observableArray([
         {code: "A", text: "A: Alle trykte og håndskrevne hjelpemidler tillatt. Alle kalkulatorer tillatt."},
         {code: "B", text: "B: Alle trykte og håndskrevne hjelpemidler tillatt. Bestemt, enkel kalkulator tillatt."},
@@ -342,6 +342,12 @@ function ViewModel() {
 }
 
 $(function() {
+    // Prevent dropdowns from closing when an input field inside the dropdown
+    // is clicked.
+    $('.dropdown input, .dropdown label').click(function(e) {
+        e.stopPropagation();
+    });
+
     vm = new ViewModel();
     ko.applyBindings(vm);
     vm.getCourses();

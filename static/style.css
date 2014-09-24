@@ -18,6 +18,45 @@ div.header {
     background-color: rgb(0, 50, 88);
 }
 
+ul#menu {
+    position: absolute;
+    right: 30px;
+    top: -3px;
+}
+
+ul#menu a.bright {
+    color: #eaeaea;
+}
+
+ul#menu a.bright:hover {
+    color: #333;
+}
+
+ul#menu a.bright:focus {
+    color: #333;
+}
+
+ul#menu a.bright:active {
+    color: #333;
+}
+
+ul.settings-dropdown input {
+    margin: 3px 20px 14px 20px;
+    width: 150px;
+}
+
+ul.settings-dropdown li:first-child {
+    margin-top: 6px;
+}
+
+ul.settings-dropdown li:last-child {
+    margin-bottom: 6px;
+}
+
+ul.settings-dropdown li.dark {
+    color: #333;
+}
+
 div#toolbar {
     padding-top: 8px;
     padding-bottom: 8px;

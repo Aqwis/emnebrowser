@@ -23,6 +23,19 @@
         <div class="navbar-header">
             <a class="navbar-brand"><strong>NTNU</strong> <em>emnevelger</em></a>
         </div>
+        <ul class="nav navbar-nav navbar-right" id="menu">
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle bright" data-toggle="dropdown"><i class="fa fa-cog fa-2x"></i></a>
+                <ul class="dropdown-menu settings-dropdown">
+                    <li class="dropdown-header">Min 1024-timeplan:</li>
+                    <li>
+                        <input class="form-control" type="text" class="input-block-level"/>
+                    </li>
+                    <li class="divider"></li>
+                    <li class="dropdown-header dark">Ved å legge til din 1024-timeplan kan du legge til fag direkte fra emnevelger</li>
+                </ul>
+            </li>
+        </ul>
     </div>
 </div>
 
@@ -101,7 +114,10 @@
             <td data-bind="text: $parent.valExamDate($data)"></td>
             <td><span data-bind="html: $parent.valStudyLevelShortname($data), attr: {title: studyLevelName, class: 'circle level' + studyLevelCode}"></span></td>
             <td class="td-url"><a target="_blank" data-bind="attr: {href: 'http://www.ntnu.no/studier/emner/' + code}"><i class="fa fa-external-link"></i></a></td>
-            <td class="td-url"><a target="_blank" data-bind="attr: {href: 'http://www.ntnu.no/studier/emner/' + code + '#tab=timeplan'}"><i class="fa fa-calendar"></i></a></td>
+            <td class="td-url"><a target="_blank" data-bind="click: $parent.addOrRemoveFromSchedule">
+                <i class="fa fa-calendar"></i>
+                <i class="fa fa-plus"></i>
+            </a></td>
         </tr>
         <!-- /ko -->
         <!-- /ko -->
