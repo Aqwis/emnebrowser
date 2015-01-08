@@ -1,5 +1,6 @@
 var fs = require('fs');
 var express = require('express');
+var querystring = require('querystring');
 var r = require('rethinkdb');
 var swig = require('swig');
 var request = require('request');
@@ -41,6 +42,8 @@ function saveListOfSubjectAreas(connection) {
 }
 
 function main() {
+    self = this;
+
     app.use(express.compress());
 
     app.engine('html', swig.renderFile);
@@ -61,16 +64,22 @@ function main() {
         var username = req.params.username;
         var course = req.params.course;
 
-        request.post("http://ntnu.1024.no/2014/var/" + username + "/change/", {
-            course_remove: course,
-            submit_remove: ""
+        request.post("http://ntnu.1024.no/2015/spring/" + username + "/change/", {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: querystring.stringify({
+                course_remove: course,
+                submit_remove: ""
+            })
         }, function(err, response, body) {
-            if (error || response.statusCode != 302) {
+            if (err || response.statusCode != 302) {
                 page.status(500);
+                page.send({ status: "failure" });
             } else {
                 page.status(200);
+                page.send({ status: "success" });
             }
-            page.send({});
         });
     });
 
@@ -78,32 +87,36 @@ function main() {
         var username = req.params.username;
         var course = req.params.course;
 
-        request.post("http://ntnu.1024.no/" + username + "/change/", {
-            course_add: course,
-            submit_add: ""
+        request.post("http://ntnu.1024.no/2015/spring/" + username + "/change/", {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: querystring.stringify({
+                course_add: course,
+                submit_add: ""
+            })
         }, function(err, response, body) {
-            if (error || response.statusCode != 302) {
+            if (err || response.statusCode != 302) {
                 page.status(500);
+                page.send({ status: "failure" });
             } else {
                 page.status(200);
+                page.send({ status: "success" });
             }
-            page.send({});
         });
     });
 
     app.get('/1024/:username', function(req, page) {
         var username = req.params.username;
 
-        request.get("http://ntnu.1024.no/" + username + "/change/", {
-            course_remove: course,
-            submit_remove: ""
-        }, function(err, response, body) {
-            if (error || response.statusCode != 302) {
+        request.get("http://ntnu.1024.no/2015/spring/" + username, function(err, response, body) {
+            if (err || response.statusCode != 302) {
                 page.status(500);
+                page.send({ status: "failure" });
             } else {
                 page.status(200);
+                page.send({ status: "success" });
             }
-            page.send({});
         });
     });
 

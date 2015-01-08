@@ -85,6 +85,15 @@ a.navbar-brand strong {
     letter-spacing: 1px;
 }
 
+span#unofficial {
+    display: inline-block;
+    font-size: 0.7em;
+    color: red;
+    -ms-transform: rotate(-10deg);
+    -webkit-transform: rotate(-10deg);
+    transform: rotate(-10deg);
+}
+
 .table {
     /*margin-bottom: 10px;*/
     margin-bottom: 0px;

@@ -27,6 +27,8 @@ function ViewModel() {
     self.loaded = ko.observable(false); // False until we have loaded courses for the first time.
     self.clickedMore = ko.observable(false); // When the user clicks more, we do not replace view with spinner.
 
+    self.user1024 = ko.observable(null, { persist: "user1024" });
+
     self.courses = ko.observableArray([]);
     self.ongoingRequests = [];
     self.getCourses = ko.computed(function() {
@@ -75,6 +77,11 @@ function ViewModel() {
         } else {
             self[selectedOptionsContainer]('');
         }
+    }
+
+    self.addOrRemoveFromSchedule = function(course, event) {
+        var code = course.code;
+        self.user1024();
     }
 
     // Table field values

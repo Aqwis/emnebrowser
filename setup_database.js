@@ -109,7 +109,7 @@ function mungeLecturer(course) {
     }
 }
 
-function mungeExamDate(course, semester) {
+function mungeExamDate(course) {
     var assessment = course.assessment;
     if (typeof(assessment) == "undefined") {
         return "-";
@@ -123,29 +123,7 @@ function mungeExamDate(course, semester) {
     });
 
     if (dates.length > 1) {
-        if (semester.autumn && !semester.spring) {
-            return dates.filter(function(date) {
-                var month_str = date.slice(5,7);
-                var month = Number(month_str);
-                if (month > 7) {
-                    return true;
-                } else {
-                    return false;
-                }
-            })[0];
-        } else if (semester.spring && !semester.autumn) {
-            return dates.filter(function(date) {
-                var month_str = date.slice(5,7);
-                var month = Number(month_str);
-                if (month <= 7) {
-                    return true;
-                } else {
-                    return false;
-                }
-            })[0];
-        } else {
-            return "Flere";
-        }
+        return "Flere";
     } else if (dates.length == 1) {
         return dates[0];
     } else {
@@ -340,7 +318,7 @@ function mungeCourse(course) {
     munged_course.lecturer = mungeLecturer(course);
     munged_course.mandatoryActivity = mungeMandatoryActivity(course);
     munged_course.semester = mungeSemester(course);
-    munged_course.examDate = mungeExamDate(course, munged_course.semester);
+    munged_course.examDate = mungeExamDate(course);
     munged_course.assessment = mungeAssessment(course);
     munged_course.subjectArea = mungeSubjectArea(course);
     munged_course.canonicalExaminationSupport = mungeCanonicalExaminationSupport(course);

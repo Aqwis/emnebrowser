@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="static/style.css">
     <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
     <script type="text/javascript" src="static/knockout-3.1.0.js"></script>
+    <script type="text/javascript" src="static/knockout.localStorage.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="static/bootstrap-multiselect.js"></script>
     <script type="text/javascript" src="static/subject_areas.js"></script>
@@ -21,20 +22,20 @@
 <div class"navbar navbar-fixed-top">
     <div class="container-fluid header">
         <div class="navbar-header">
-            <a class="navbar-brand"><strong>NTNU</strong> <em>emnevelger</em></a>
+            <a class="navbar-brand"><strong>NTNU</strong> <em>emnevelger </em></a>
         </div>
-        <ul class="nav navbar-nav navbar-right" id="menu">
+        <!--<ul class="nav navbar-nav navbar-right" id="menu">
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle bright" data-toggle="dropdown"><i class="fa fa-cog fa-2x"></i></a>
                 <ul class="dropdown-menu settings-dropdown">
                     <li class="dropdown-header">Min 1024-timeplan:</li>
                     <li>
-                        <input class="form-control" type="text" class="input-block-level"/>
+                        <input class="form-control" type="text" class="input-block-level" data-bind="value: user1024"/>
                     </li>
                     <li class="divider"></li>
                     <li class="dropdown-header dark">Ved å legge til din 1024-timeplan kan du legge til fag direkte fra emnevelger</li>
                 </ul>
-            </li>
+            </li>-->
         </ul>
     </div>
 </div>
@@ -86,7 +87,7 @@
             <th><span class="clickable-header" id="header-code" data-bind="click: onHeaderClick">Kode <i class="fa fa-sort"></i></span></th>
             <th><span class="clickable-header" id="header-credit" data-bind="click: onHeaderClick" title="Studiepoeng">SP <i class="fa fa-sort"></i></span></th>
             <th><span class="clickable-header" id="header-name" data-bind="click: onHeaderClick">Navn <i class="fa fa-sort"></i></span></th>
-            <th><span id="header-semester">Semester</span></th>
+            <th><span id="header-semester">Undervisningssemester</span></th>
             <th><span id="header-language">Språk</span></th>
             <th><span id="header-mandatory">Oblig. arbeid</span></th>
             <th><span id="header-grading">Vurderingsform</span></th>
@@ -95,7 +96,7 @@
             <th><span id="header-level">Eksamensdato</span></th>
             <th><span id="header-level">Nivå</span></th>
             <th><span id="header-moreinfo"></span></th>
-            <th><span id="header-timetable"></span></th>
+            <!--<th><span id="header-timetable"></span></th>-->
         </tr>
     </thead>
     <tbody>
@@ -114,10 +115,10 @@
             <td data-bind="text: $parent.valExamDate($data)"></td>
             <td><span data-bind="html: $parent.valStudyLevelShortname($data), attr: {title: studyLevelName, class: 'circle level' + studyLevelCode}"></span></td>
             <td class="td-url"><a target="_blank" data-bind="attr: {href: 'http://www.ntnu.no/studier/emner/' + code}"><i class="fa fa-external-link"></i></a></td>
-            <td class="td-url"><a target="_blank" data-bind="click: $parent.addOrRemoveFromSchedule">
+            <!--<td class="td-url"><a target="_blank" data-bind="click: $parent.addOrRemoveFromSchedule">
                 <i class="fa fa-calendar"></i>
                 <i class="fa fa-plus"></i>
-            </a></td>
+            </a></td>-->
         </tr>
         <!-- /ko -->
         <!-- /ko -->
@@ -148,14 +149,25 @@
 
 <div id="footer-wrapper" class="container-custom">
     <div id="footer">
-        <p><em>NTNU emnevelger</em> er ikke offisielt tilknyttet NTNU. Dataen som benyttes er hentet fra <a href="http://www.ime.ntnu.no/api/">IMEs emne-API</a>.</p>
+        <p><em>NTNU emnevelger</em> er ikke tilknyttet NTNU. Dataen som benyttes er hentet fra <a href="http://www.ime.ntnu.no/api/">IMEs emne-API</a>. Det garanteres på ingen måte at informasjonen på siden er korrekt.</p>
         <span id="footer-right">
-            <p>Siden er utviklet av <a href="mailto:trygvwii@stud.ntnu.no">Trygve Bertelsen Wiig</a>. Feil? Bugs? Ta kontakt.</p>
+            <p>Feil? Bugs? Ta kontakt.</p>
             <a class="imglink" href="mailto:trygvwii@stud.ntnu.no"><i class="fa fa-envelope-o fa-2x"></i></a>
-            <a class="imglink" href="blank"><i class="fa fa-facebook-square fa-2x"></i></a>
+            <!--<a class="imglink" href="blank"><i class="fa fa-facebook-square fa-2x"></i></a>-->
         </span>
     </div>
 </div>
+
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-57227408-2', 'auto');
+    ga('send', 'pageview');
+
+</script>
 
 </body>
 </html>
