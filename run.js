@@ -4,6 +4,7 @@ var querystring = require('querystring');
 var r = require('rethinkdb');
 var swig = require('swig');
 var request = require('request');
+var compression = require('compression');
 var app = express();
 
 function stringToType(string, type) {
@@ -44,7 +45,7 @@ function saveListOfSubjectAreas(connection) {
 function main() {
     self = this;
 
-    app.use(express.compress());
+    app.use(compression());
 
     app.engine('html', swig.renderFile);
     app.set('view engine', 'html');
