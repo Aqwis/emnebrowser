@@ -114,6 +114,8 @@ function main() {
                 page.status(500);
                 page.send({ status: "failure" });
             } else {
+
+
                 page.status(200);
                 page.send({ status: "success" });
             }
@@ -150,7 +152,7 @@ function main() {
                 value = stringToType(value, type);
             }
 
-            /* We go through all the key and filter
+            /* We go through all the keys and filter
             the results for each of them. */
             if (key == "orderBy") {
                 orderBy = value;
@@ -178,10 +180,8 @@ function main() {
                 });
                 if (autumn && !spring) {
                     reql = reql.filter(r.row("semester")("autumn"));
-                    //reql = reql.getAll(true, {index: 'autumn'}); // FIXME: For whatever reason, this throws an exception when combined with a credit filter
                 } else if (!autumn && spring) {
                     reql = reql.filter(r.row("semester")("spring"));
-                    //reql = reql.getAll(true, {index: 'spring'}); // FIXME: For whatever reason, this throws an exception when combined with a credit filter
                 }
             } else if (key == "subjectArea") {
                 reql = reql.filter(function(doc) {
@@ -235,7 +235,7 @@ function main() {
     });
 
     // Start the server
-    app.listen(5000);
+    app.listen(5002);
     console.log("Running...");
 }
 

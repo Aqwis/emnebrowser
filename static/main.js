@@ -28,6 +28,12 @@ function ViewModel() {
     self.clickedMore = ko.observable(false); // When the user clicks more, we do not replace view with spinner.
 
     self.user1024 = ko.observable(null, { persist: "user1024" });
+    self.chosenCourses = ko.observableArray([]);
+    self.updateChosenCourses = function(username) {
+        var req = $.getJSON("/api/" + username, function(data) {
+            self.chosenCourses(data);
+        });
+    }
 
     self.courses = ko.observableArray([]);
     self.ongoingRequests = [];
