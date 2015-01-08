@@ -1,0 +1,26 @@
+{
+  "name": "ntnu-courses",
+  "version": "0.1.0",
+  "bin": {
+    "ntnu-courses": "./run.js"
+  },
+  "dependencies": {
+    "async": "~0.9.0",
+    "cookie-parser": "~1.3.3",
+    "cradle": "~0.6.9",
+    "express": "~4.10.7",
+    "node-protobuf": "~1.2.2",
+    "querystring": "~0.2.0",
+    "request": "~2.51.0",
+    "rethinkdb": "~1.15.0-0",
+    "swig": "~1.4.2"
+  },
+  "author": {
+    "name": "Trygve Bertelsen Wiig",
+    "email": "trygvebw@gmail.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Aqwis/emnebrowser/issues"
+  }
+}
