@@ -27,13 +27,50 @@ function ViewModel() {
     self.loaded = ko.observable(false); // False until we have loaded courses for the first time.
     self.clickedMore = ko.observable(false); // When the user clicks more, we do not replace view with spinner.
 
-    self.user1024 = ko.observable(null, { persist: "user1024" });
+    // 1024 integration
+
+    self.user1024 = ko.observable(null, { persist: "user1024" }).extend({ rateLimit: 500 });
     self.chosenCourses = ko.observableArray([]);
-    self.updateChosenCourses = function(username) {
-        var req = $.getJSON("/api/" + username, function(data) {
-            self.chosenCourses(data);
+    self.updateChosenCourses = function() {
+        $.getJSON("/1024/" + self.user1024(), function(data) {
+            if (data.status == "success") {
+                self.chosenCourses(data.courses);
+            }
         });
     }
+    self.user1024.subscribe(self.updateChosenCourses);
+    self.courseIsChosen = function(code) {
+        return ko.computed({
+            read: function() {
+                return self.chosenCourses().map(function(el) { return el.code; }).indexOf(code) >= 0;
+            }
+        });
+    }
+    self.addOrRemoveFromSchedule = function(course, event) {
+        var code = course.code;
+        var isChosen = self.chosenCourses().map(function(el) { return el.code; }).indexOf(code) >= 0;
+
+        if (isChosen) {
+            var courseId = self.chosenCourses()[self.chosenCourses().map(function(el) { return el.code; }).indexOf(code)].id;
+            $.ajax({
+                url: '1024/' + self.user1024() + "/" + courseId,
+                type: 'DELETE',
+                success: function(result) {
+                    self.updateChosenCourses();
+                }
+            });
+        } else {
+            $.ajax({
+                url: '1024/' + self.user1024() + "/" + code,
+                type: 'PUT',
+                success: function(result) {
+                    self.updateChosenCourses();
+                }
+            });
+        }
+    }
+
+    // Courses
 
     self.courses = ko.observableArray([]);
     self.ongoingRequests = [];
@@ -83,11 +120,6 @@ function ViewModel() {
         } else {
             self[selectedOptionsContainer]('');
         }
-    }
-
-    self.addOrRemoveFromSchedule = function(course, event) {
-        var code = course.code;
-        self.user1024();
     }
 
     // Table field values
@@ -364,4 +396,8 @@ $(function() {
     vm = new ViewModel();
     ko.applyBindings(vm);
     vm.getCourses();
+
+    if (vm.user1024()) {
+        vm.updateChosenCourses();
+    }
 });

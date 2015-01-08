@@ -5,6 +5,10 @@ var r = require('rethinkdb');
 var swig = require('swig');
 var request = require('request');
 var compression = require('compression');
+
+var jsdom = require('jsdom');
+var jquery = require('jquery');
+
 var app = express();
 
 function stringToType(string, type) {
@@ -61,16 +65,16 @@ function main() {
     app.use('/static', express.static(__dirname + '/static'));
 
     // Routing
-    app.delete('/1024/:username/:course', function(req, page) {
+    app.delete('/1024/:username/:courseId', function(req, page) {
         var username = req.params.username;
-        var course = req.params.course;
+        var courseId = req.params.courseId; // different from course code
 
         request.post("http://ntnu.1024.no/2015/spring/" + username + "/change/", {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: querystring.stringify({
-                course_remove: course,
+                course_remove: courseId,
                 submit_remove: ""
             })
         }, function(err, response, body) {
@@ -87,7 +91,7 @@ function main() {
     app.put('/1024/:username/:course', function(req, page) {
         var username = req.params.username;
         var course = req.params.course;
-
+        
         request.post("http://ntnu.1024.no/2015/spring/" + username + "/change/", {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -111,14 +115,30 @@ function main() {
         var username = req.params.username;
 
         request.get("http://ntnu.1024.no/2015/spring/" + username, function(err, response, body) {
-            if (err || response.statusCode != 302) {
+            if (err || response.statusCode != 200) {
                 page.status(500);
                 page.send({ status: "failure" });
             } else {
+                var env = jsdom.env;
+                
+                env(body, function(errors, window) {
+                    if (errors) {
+                        page.status(500);
+                        page.send({ status: "failure" });
+                    } else {
+                        var $ = jquery(window);
+                        
+                        var courses = $("table#courses tbody").children().map(function() {
+                            return {
+                                id: $(this).attr('class').split("-")[1],
+                                code: $($(this).children()[0]).text().trim()
+                            };
+                        }).toArray();
 
-
-                page.status(200);
-                page.send({ status: "success" });
+                        page.status(200);
+                        page.send({ status: "success", courses: courses });
+                    }
+                });
             }
         });
     });

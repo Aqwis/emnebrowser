@@ -113,7 +113,12 @@
             <td class="td-url"><a target="_blank" data-bind="attr: {href: 'http://www.ntnu.no/studier/emner/' + code}"><i class="fa fa-external-link"></i></a></td>
             <td class="td-url"><a target="_blank" data-bind="click: $parent.addOrRemoveFromSchedule">
                 <i class="fa fa-calendar"></i>
+                <!-- ko ifnot: $parent.courseIsChosen(code) -->
                 <i class="fa fa-plus"></i>
+                <!-- /ko -->
+                <!-- ko if: $parent.courseIsChosen(code) -->
+                <i class="fa fa-minus"></i>
+                <!-- /ko -->
             </a></td>
         </tr>
         <!-- /ko -->
