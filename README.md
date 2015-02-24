@@ -1,6 +1,6 @@
 # emnebrowser
 
-emnebrowser is a web app for search, filtering and sorting courses at the [Norwegian University of Science and Technology](http://www.ntnu.edu/). A live version of the app is located at [emner.gløs.no](http://emner.xn--gls-1na.no/). emnebrowser allows you to, for instance, list all courses that offer 7.5 credits, is taught in the fall semester and doesn't have any mandatory activities. The data is retrieved from the [course API](http://www.ime.ntnu.no/api/) offered by the Faculty of Information Technology, Mathematics and Electrical Engineering at NTNU.
+emnebrowser is a web app for search, filtering and sorting courses at the [Norwegian University of Science and Technology](http://www.ntnu.edu/) (NTNU). A live version of the app is located at [emner.gløs.no](http://emner.xn--gls-1na.no/). emnebrowser allows you to, for instance, list all courses that offer 7.5 credits, are taught in the fall semester and don't have any mandatory activities. The data is retrieved from the [course API](http://www.ime.ntnu.no/api/) offered by the Faculty of Information Technology, Mathematics and Electrical Engineering at NTNU.
 
 ## Usage
 
