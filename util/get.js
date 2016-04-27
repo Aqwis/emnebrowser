@@ -1,7 +1,7 @@
 var http = require('http');
 var fs = require('fs');
 
-function main() {
+function retrieveCourses() {
     getCourseDict(function(courseDict) {
         getAllCourses(courseDict);
     });
@@ -17,7 +17,7 @@ function getCourseDict(callback) {
             coursesRaw += data;
         }).on('end', function() {
             courseDict = JSON.parse(coursesRaw);
-            fs.writeFile('course_list.json', coursesRaw, function(err) {
+            fs.writeFile('ntnu_course_list.json', coursesRaw, function(err) {
                 if(err) {
                     throw err;
                 }
