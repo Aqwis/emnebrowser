@@ -2,7 +2,7 @@
 *.swo
 *.tmp
 *.log
-ntnu_courses
+*_courses
 node_modules
 rethinkdb_data
-course_list.json
+*_course_list.json
