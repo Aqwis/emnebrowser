@@ -1,7 +1,10 @@
 var fs = require('fs');
 var express = require('express');
 var querystring = require('querystring');
-var r = require('rethinkdb');
+var r = require('rethinkdbdash')({
+      pool: false,
+      cursor: true
+});;
 var swig = require('swig');
 var request = require('request');
 var compression = require('compression');

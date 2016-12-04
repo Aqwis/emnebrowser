@@ -1,4 +1,7 @@
-var r = require('rethinkdb');
+var r = require('rethinkdbdash')({
+      pool: false,
+      cursor: true
+});
 var fs = require('fs');
 var async = require('async');
 var http = require('http');
