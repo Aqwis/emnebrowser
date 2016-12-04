@@ -150,7 +150,7 @@ function main() {
 
         // We go through each entry in query and
         // filter for each entry
-        var reql = r.db('ntnu_courses').table('courses');
+        var reql = r.db('courses').table('ntnu_courses');
 
         // In some cases, the required filtering is too complicated
         // to be done in-database.
@@ -240,7 +240,7 @@ function main() {
         }
 
         reql = reql.limit(results);
-        reql.run(connection, {durability: "soft", useOutdated: true}, function(err, c) {
+        reql.run(connection, {durability: "soft"}, function(err, c) {
             if (err) console.log(err);
             if (typeof(c) != "undefined") {
                 c.toArray(function(err, result) {

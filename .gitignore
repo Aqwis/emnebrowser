@@ -1,7 +1,8 @@
 *.swp
 *.swo
 *.tmp
-courses
+*.log
+*_courses
 node_modules
 rethinkdb_data
-course_list.json
+*_course_list.json
