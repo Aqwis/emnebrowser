@@ -8,7 +8,9 @@ function main() {
         createDatabase,
         createTable,
         insertCourseData
-    ]);
+    ], function(status) {
+        return status;
+    });
 }
 
 function arrayUnique(a) {
@@ -341,6 +343,11 @@ function insertCourseData(connection, callback) {
             console.log("Could not open " + filename + "!");
             return;
         }
+        if (!json.course) {
+            var courseCode = json.request.courseCode;
+            console.log("Malformed file for course " + courseCode + "!");
+            return;
+        }
         r.db("ntnu_courses").table("courses").insert(mungeCourse(json.course), {upsert: true}).run(connection, function(err, res) {
             if (err) {
                 console.log(err);
@@ -348,6 +355,7 @@ function insertCourseData(connection, callback) {
             //console.log("Created table for " + filename + "...");
         });
     });
+    console.log("Finished inserting course data!");
     callback(null, "finished");
 }
 

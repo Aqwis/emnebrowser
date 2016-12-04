@@ -256,7 +256,7 @@ function main() {
     });
 
     // Start the server
-    app.listen(5002);
+    app.listen(5000);
     console.log("Running...");
 }
 
