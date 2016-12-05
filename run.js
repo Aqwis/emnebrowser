@@ -30,25 +30,6 @@ function stringToType(string, type) {
     }
 }
 
-function saveListOfSubjectAreas(connection) {
-    var reql = r.db('ntnu_courses').table('courses').pluck({subjectArea: {name: true}})("subjectArea").reduce(function(l, r) { return l.setUnion(r); })("name");
-    reql.run(connection, {
-        durability: "soft",
-        useOutdated: true
-    }, function(err, c) {
-        if (err) console.log(err);
-        c.toArray(function(err, result) {
-            fs.writeFile("subject_areas", result, function(err) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log("Saved.");
-                }
-            })
-        });
-    });
-}
-
 function main() {
     self = this;
 

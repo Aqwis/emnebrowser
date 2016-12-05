@@ -14,10 +14,19 @@ var DatabaseLogic = function() {
 	this.prefix = "ntnu";
 
 	this.retrieveCourses = function () {
-		var self = this;
-	    this.getCourseDict(function(courseDict) {
-	        self.getAllCourses(courseDict);
+		this.setupFolder();
+	    this.getCourseDict((courseDict) => {
+	        this.getAllCourses(courseDict);
 	    });
+	}
+
+	this.setupFolder = () => {
+		try {
+			fs.accessSync('data/ntnu/', fs.constants.W_OK);
+		} catch (e) {
+			console.log(e)
+			fs.mkdirSync('data/ntnu/');
+		}
 	}
 
 	this.getCourseDict = function (callback) {
@@ -30,7 +39,7 @@ var DatabaseLogic = function() {
 	            coursesRaw += data;
 	        }).on('end', function() {
 	            courseDict = JSON.parse(coursesRaw);
-	            fs.writeFile('ntnu_course_list.json', coursesRaw, function(err) {
+	            fs.writeFile('data/ntnu/course_list.json', coursesRaw, function(err) {
 	                if(err) {
 	                    throw err;
 	                }
@@ -41,20 +50,19 @@ var DatabaseLogic = function() {
 	}
 
 	this.getAllCourses = function (courseDict) {
-		var self = this;
 	    var courseCodeList = [];
 	    var i = 0;
 
-	    courseDict.course.forEach(function(course) {
+	    courseDict.course.forEach((course) => {
 	        course.code = course.code.replace('/', ''); // sanitize course codes
-	        if (fs.existsSync('ntnu_courses/' + course.code + ".json")) {
+	        if (fs.existsSync('data/ntnu/' + course.code + ".json")) {
 	            console.log(course.code + " already fetched!");
 	            return;
 	        }
 	        setTimeout(function() {
 	            console.log(course);
 	            courseCodeList.push(course.code);
-	            self.getAndSaveCourseInfo(course.code);
+	            this.getAndSaveCourseInfo(course.code);
 	        }, 500*i);
 	        i++;
 	    });
@@ -70,12 +78,31 @@ var DatabaseLogic = function() {
 	        res.on('data', function(data) {
 	            courseDataRaw += data;
 	        }).on('end', function() {
-	            fs.writeFile('ntnu_courses/' + courseCode + ".json", courseDataRaw, function(err) {
+	            fs.writeFile('data/ntnu/' + courseCode + ".json", courseDataRaw, function(err) {
 	                if (err) {
 	                    throw err;
 	                }
 	                console.log("Fetched " + courseCode + "!");
 	            });
+	        });
+	    });
+	}
+
+	this.saveListOfSubjectAreas = () => {
+	    var reql = r.db('ntnu_courses').table('courses').pluck({subjectArea: {name: true}})("subjectArea").reduce(function(l, r) { return l.setUnion(r); })("name");
+	    reql.run(connection, {
+	        durability: "soft",
+	        useOutdated: true
+	    }, function(err, c) {
+	        if (err) console.log(err);
+	        c.toArray(function(err, result) {
+	            fs.writeFile("subject_areas", result, function(err) {
+	                if (err) {
+	                    console.log(err);
+	                } else {
+	                    console.log("Saved.");
+	                }
+	            })
 	        });
 	    });
 	}
@@ -358,17 +385,16 @@ var DatabaseLogic = function() {
 
 	this.insertCourseData = function (connection, callback) {
 	    // Insert course data into database
-	    var self = this;
 	    var prefix = this.prefix;
 	    var json = null;
-	    var filenames = fs.readdirSync(prefix + '_courses/');
+	    var filenames = fs.readdirSync('data/ntnu/');
 
 	    var inserted = 0;
 	    var toBeInserted = filenames.length;
 
-	    filenames.forEach(function (filename) {
+	    filenames.forEach((filename) => {
 	        try {
-	            json = require('../ntnu_courses/' + filename);
+	            json = require('../data/ntnu/' + filename);
 	        } catch (err) {
 	        	console.log(err);
 	            console.log("Could not open " + filename + "!");
@@ -379,7 +405,7 @@ var DatabaseLogic = function() {
 	        	console.log("Course object was null for " + filename);
 	        	inserted = inserted + 1;
 	        } else {
-		        r.db("courses").table(prefix + "_courses").insert(self.mungeCourse(json.course), {conflict: "replace"}).run(connection, function(err, res) {
+		        r.db("courses").table(prefix + "_courses").insert(this.mungeCourse(json.course), {conflict: "replace"}).run(connection, function(err, res) {
 		            if (err) {
 		                console.log(err);
 		            }
