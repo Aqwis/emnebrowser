@@ -1,4 +1,7 @@
-var r = require('rethinkdb');
+var r = require('rethinkdbdash')({
+      pool: false,
+      cursor: true
+});
 
 function main() {
     r.connect({host: 'localhost', port: 28015}, function(err, connection) {
@@ -20,7 +23,7 @@ function createIndices(connection) {
 }
 
 function createIndex(connection, key) {
-	var reql = r.db('ntnu_courses').table('courses');
+	var reql = r.db('courses').table('ntnu_courses');
 	reql = reql.indexCreate(key);
 	reql.run(connection, function(err, res) {
 		console.log(err);
@@ -30,7 +33,7 @@ function createIndex(connection, key) {
 }
 
 function createFunctionIndex(connection, name, callback) {
-	var reql = r.db('ntnu_courses').table('courses');
+	var reql = r.db('courses').table('ntnu_courses');
 	reql = reql.indexCreate(name, callback);
 	reql.run(connection, function(err, res) {
 		console.log(err);

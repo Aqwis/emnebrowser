@@ -318,6 +318,10 @@ var DatabaseLogic = function() {
 		return course.name.trim();
 	}
 
+    this.mungeLocation = function (course) {
+        return course.location.trim();
+    }
+
 	this.mungeCourse = function (course) {
 	    // Calculate aggregate course properties to avoid
 	    // massive filtering complexity and workload
@@ -343,6 +347,7 @@ var DatabaseLogic = function() {
 	    munged_course.assessment = this.mungeAssessment(course);
 	    munged_course.subjectArea = this.mungeSubjectArea(course);
 	    munged_course.canonicalExaminationSupport = this.mungeCanonicalExaminationSupport(course);
+        munged_course.location = this.mungeLocation(course);
 
 	    for (var i = 0; i < keys_to_keep.length; i++) {
 	        munged_course[keys_to_keep[i]] = course[keys_to_keep[i]];

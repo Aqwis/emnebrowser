@@ -57,6 +57,10 @@
             <button id="credit-deselect" class="btn btn-default" data-bind="enable: semester().length > 0, click: function() {uncheckEverything('semester');}"><i class="fa fa-times text-danger"></i></button>
         </div>
         <div class="btn-group">
+            <select class="form-control multiselect" multiple="multiple" data-bind="selectedOptions: location, options: locationOptions, multiselect: multiSelectInitOptions" title="By"></select>
+            <button id="credit-deselect" class="btn btn-default" data-bind="enable: location().length > 0, click: function() {uncheckEverything('location');}"><i class="fa fa-times text-danger"></i></button>
+        </div>
+        <div class="btn-group">
             <select class="form-control multiselect" multiple="multiple" data-bind="options: studyLevelOptionsProxy, selectedOptions: studyLevel, multiselect: multiSelectInitOptions" title="Nivå"></select>
             <button id="studyLevel-deselect" class="btn btn-default" data-bind="enable: studyLevel().length > 0, click: function() {uncheckEverything('studyLevel')}"><i class="fa fa-times text-danger"></i></button>
         </div>
@@ -83,6 +87,7 @@
             <th><span class="clickable-header" id="header-code" data-bind="click: onHeaderClick">Kode <i class="fa fa-sort"></i></span></th>
             <th><span class="clickable-header" id="header-credit" data-bind="click: onHeaderClick" title="Studiepoeng">SP <i class="fa fa-sort"></i></span></th>
             <th><span class="clickable-header" id="header-name" data-bind="click: onHeaderClick">Navn <i class="fa fa-sort"></i></span></th>
+            <th><span id="header-location">By</span></th>
             <th><span id="header-semester">Undervisningssemester</span></th>
             <th><span id="header-language">Språk</span></th>
             <th><span id="header-mandatory">Oblig. arbeid</span></th>
@@ -97,11 +102,12 @@
     </thead>
     <tbody>
         <!-- ko foreach: courses -->
-        <!-- ko if: $parent.valSemester($data) && $parent.loaded-->
+        <!-- ko if: $parent.valSemester($data) && $parent.loaded -->
         <tr id="row-{{ course.code }}">
             <td data-bind="text: code"></td>
             <td data-bind="text: credit"></td>
             <td data-bind="text: name"></td>
+            <td data-bind="text: $parent.valLocation($data)"></td>
             <td data-bind="text: $parent.valSemester($data)"></td>
             <td data-bind="text: $parent.valLanguage($data)"></td>
             <td data-bind="text: $parent.valMandatoryActivity($data, true), attr: {title: $parent.valMandatoryActivity($data, false)}"></td>

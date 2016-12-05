@@ -207,6 +207,10 @@ function main() {
                 } else if (!autumn && spring) {
                     reql = reql.filter(r.row("semester")("spring"));
                 }
+            } else if (key == "location") {
+                reql = reql.filter(function(doc) {
+                    return r.expr(value).contains(doc("location"));
+                });
             } else if (key == "subjectArea") {
                 reql = reql.filter(function(doc) {
                     return r.not(r.expr(value).setIntersection(doc("subjectArea")).isEmpty());

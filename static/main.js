@@ -151,6 +151,10 @@ function ViewModel() {
         }
     }
 
+    self.valLocation = function(course) {
+        return course.location;
+    }
+
     self.valMandatoryActivity = function(course, truncate) {
         if (truncate) {
             return course.mandatoryActivity.text;
@@ -218,10 +222,15 @@ function ViewModel() {
     self.valExamSupportDescription = function(course) {
         var code = self.valExamSupport(course);
         var options = self.examSupportOptions.peek();
-        if (code != "-") {
-            return options.filter(function(opt) {
+        if (code && code != "-") {
+            var matchingOption = options.filter(function(opt) {
                 return (opt.code == code);
-            })[0].text;
+            })[0];
+            if (matchingOption) {
+                return matchingOption.text;
+            } else {
+                return '';
+            }
         }
     }
 
@@ -230,7 +239,11 @@ function ViewModel() {
         var studyLevelObj = self.studyLevelOptions().filter(function(obj) {
             return obj.code == levelCode;
         })[0];
-        return studyLevelObj.shortname;
+        if (studyLevelObj) {
+            return studyLevelObj.shortname;
+        } else {
+            return '';
+        }
     }
 
     // Filter variables 
@@ -243,8 +256,10 @@ function ViewModel() {
         ]);
     self.studyLevelOptions = ko.observableArray([
             {code: "50", name: "Norsk for utenlandske studenter", shortname: "NFU"},
+            {code: "60", name: "Forprøve/forkurs", shortname: "FOR"},
             {code: "70", name: "Examen philosophicum", shortname: "EXP"},
             {code: "71", name: "Examen facultatum", shortname: "EXF"},
+            {code: "800", name: "Videreutdanning lavere grad", shortname: "LAV"},
             {code: "90", name: "Lavere grad, redskapskurs", shortname: "LAV"},
             {code: "100", name: "Grunnleggende emner, nivå I", shortname: "&nbsp;1&nbsp;"},
             {code: "200", name: "Videregående emner, nivå II", shortname: "&nbsp;2&nbsp;"},
@@ -270,6 +285,7 @@ function ViewModel() {
         });
     });
     self.semesterOptions = ko.observableArray(["Høst", "Vår"]);
+    self.locationOptions = ko.observableArray(["Trondheim", "Gjøvik", "Ålesund"]);
     self.subjectAreaOptions = ko.observableArray(subject_areas);
     self.mandatoryActivitiesOptions = ko.observableArray(["Ja", "Kun tellende", "Nei"]);
     self.assessmentOptions = ko.observableArray(["Skriftlig", "Muntlig", "Hjemmeeks.", "Semesterprøve", "Arbeider", "Avhandling", "Annet"]);
@@ -329,6 +345,8 @@ function ViewModel() {
     });
     self.semester = ko.observableArray();
     self.semester.subscribe(self.resetNumberOfResults);
+    self.location = ko.observableArray();
+    self.location.subscribe(self.resetNumberOfResults);
     self.subjectArea = ko.observableArray();
     self.subjectArea.subscribe(self.resetNumberOfResults);
     self.mandatoryActivities = ko.observableArray();
@@ -364,6 +382,10 @@ function ViewModel() {
             },
             semester: {
                 value: self.semester(),
+                type: "string"
+            },
+            location: {
+                value: self.location(),
                 type: "string"
             },
             subjectArea: {
