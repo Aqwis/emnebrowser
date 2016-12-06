@@ -131,7 +131,7 @@
         <!-- /ko -->
         <!-- ko if: courses().length == 0 && loaded() -->
         <tr id="no-results-row">
-            <td colspan=13>
+            <td colspan=14>
                 <p class="unicode-face">&#9785;</p>
                 <p>Dessverre, ingen resultater.</p>
             </td>
@@ -139,14 +139,14 @@
         <!-- /ko -->
         <!-- ko if: !loaded() -->
         <tr id="no-results-row">
-            <td colspan=13><p><i class="fa fa-spinner fa-3x rotate"></i></p></td>
+            <td colspan=14><p><i class="fa fa-spinner fa-3x rotate"></i></p></td>
         </tr>
         <!-- /ko -->
         <tr id="seemore-row" data-bind="click: onMoreClick, visible: courses().length % 50 == 0 && courses().length > 0 && loaded() && !clickedMore()">
-            <td colspan=13><p id="seemore-text">Se flere emner</p></td>
+            <td colspan=14><p id="seemore-text">Se flere emner</p></td>
         </tr>
         <tr id="seemore-row" class="inactive" data-bind="visible: courses().length % 50 == 0 && courses().length > 0 && loaded() && clickedMore()">
-            <td colspan=13><p id="seemore-text"><i class="fa fa-spinner rotate"></i></p></td>
+            <td colspan=14><p id="seemore-text"><i class="fa fa-spinner rotate"></i></p></td>
         </tr>
     </tbody>
 </table>
