@@ -59,7 +59,7 @@ var DatabaseLogic = function() {
 	            console.log(course.code + " already fetched!");
 	            return;
 	        }
-	        setTimeout(function() {
+	        setTimeout(() => {
 	            console.log(course);
 	            courseCodeList.push(course.code);
 	            this.getAndSaveCourseInfo(course.code);
@@ -405,15 +405,21 @@ var DatabaseLogic = function() {
 	        	console.log("Course object was null for " + filename);
 	        	inserted = inserted + 1;
 	        } else {
-		        r.db("courses").table(prefix + "_courses").insert(this.mungeCourse(json.course), {conflict: "replace"}).run(connection, function(err, res) {
-		            if (err) {
-		                console.log(err);
-		            }
-		            inserted = inserted + 1;
-		            if (inserted == toBeInserted) {
-		            	callback(null, connection);
-		            }
-		        });
+                try {
+                    r.db("courses").table(prefix + "_courses").insert(this.mungeCourse(json.course), {conflict: "replace"}).run(connection, function(err, res) {
+                        if (err) {
+                            console.log(err);
+                        }
+                        inserted = inserted + 1;
+                        if (inserted == toBeInserted) {
+                            callback(null, connection);
+                        }
+                    });
+                } catch (err) {
+                    console.log('Caught error while processing ' + filename);
+                    console.log(err);
+                    console.log('Continuing...');
+                }
 	    	}
 	    });
 	    return;
